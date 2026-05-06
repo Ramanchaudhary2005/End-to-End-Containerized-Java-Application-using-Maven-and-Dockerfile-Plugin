@@ -1,0 +1,4 @@
+com\example\studentapp\controller\StudentController.class
+com\example\studentapp\service\StudentService.class
+com\example\studentapp\StudentAppApplication.class
+com\example\studentapp\model\Student.class

@@ -1,0 +1,130 @@
+name: Spring Boot CI/CD Pipeline
+
+# Expected flow:
+# 1) build-and-test: compile, test, and package the JAR
+# 2) docker-build-push: build/push Docker image (latest + commit SHA)
+# 3) verify-deployment: pull and run the image, then verify health endpoint
+on:
+  push:
+    branches:
+      - main
+
+env:
+  # Set your Docker Hub repository name here (e.g. student-app, springboot-app)
+  IMAGE_NAME: student-app
+  # App inside container currently runs on 9090 in this project.
+  CONTAINER_PORT: "9090"
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repository source code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Install JDK 17 and enable built-in Maven dependency caching
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      # Execute unit/integration tests
+      - name: Run Maven tests
+        run: mvn test
+
+      # Build executable Spring Boot JAR without rerunning tests
+      - name: Package application
+        run: mvn clean package -DskipTests
+
+      # Fail job if no JAR was produced
+      - name: Verify JAR artifact exists
+        run: |
+          ls -la target
+          test -f target/*.jar
+
+  docker-build-push:
+    name: Docker Build and Push
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+      # Checkout source for Docker build context
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Prepare advanced Docker builder
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Authenticate to Docker Hub via repository secrets
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Generate consistent image tags and labels
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=sha,format=short
+
+      # Build image with Buildx + GitHub Actions cache and push to Docker Hub
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  verify-deployment:
+    name: Verify Deployment
+    runs-on: ubuntu-latest
+    needs: docker-build-push
+
+    steps:
+      # Pull the just-published latest image
+      - name: Pull latest image
+        run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+
+      # Run container and publish host port 8080
+      - name: Run container
+        run: |
+          docker run -d --name student-app-ci \
+            -p 8080:${{ env.CONTAINER_PORT }} \
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+
+      # Give application time to boot
+      - name: Wait for startup
+        run: sleep 10
+
+      # Validate application reachability with retries; fails if app never becomes healthy
+      - name: Health check
+        run: |
+          for i in {1..10}; do
+            if curl --fail --show-error --silent http://localhost:8080/ > /dev/null; then
+              echo "Application is reachable on http://localhost:8080/"
+              exit 0
+            fi
+            echo "Waiting for app to become ready... attempt $i/10"
+            sleep 3
+          done
+          echo "Health check failed: application did not respond on http://localhost:8080/"
+          exit 1
+
+      # Always print logs for diagnostics when this job fails
+      - name: Print container logs on failure
+        if: failure()
+        run: docker logs student-app-ci

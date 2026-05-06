@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student App Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">E-Skool</div>
+        <nav>
+            <a href="#">Dashboard</a>
+            <a href="#">Students</a>
+            <a href="#">Courses</a>
+            <a href="#">Results</a>
+            <a href="#">Settings</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <h1>Student Registration Dashboard</h1>
+            <p>Spring Boot + Maven + Dockerfile Plugin</p>
+        </header>
+
+        <section class="content-grid">
+            <article class="panel form-panel">
+                <h2>Student Registration</h2>
+                <form th:action="@{/students}" th:object="${student}" method="post" class="student-form">
+                    <label for="name">Full Name</label>
+                    <input id="name" type="text" th:field="*{name}" placeholder="Input your name">
+                    <small class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+
+                    <label for="studentNumber">Student Number</label>
+                    <input id="studentNumber" type="text" th:field="*{studentNumber}" placeholder="2024-0001">
+                    <small class="error" th:if="${#fields.hasErrors('studentNumber')}" th:errors="*{studentNumber}"></small>
+
+                    <label for="email">Email Address</label>
+                    <input id="email" type="email" th:field="*{email}" placeholder="Input your email address">
+                    <small class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+
+                    <label>Gender</label>
+                    <div class="radio-group">
+                        <label><input type="radio" th:field="*{gender}" value="Male"> Male</label>
+                        <label><input type="radio" th:field="*{gender}" value="Female"> Female</label>
+                        <label><input type="radio" th:field="*{gender}" value="Other"> Other</label>
+                    </div>
+
+                    <label for="course">Course</label>
+                    <select id="course" th:field="*{course}">
+                        <option value="">-- Select Course --</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Business Administration">Business Administration</option>
+                        <option value="Law">Law</option>
+                    </select>
+                    <small class="error" th:if="${#fields.hasErrors('course')}" th:errors="*{course}"></small>
+
+                    <label for="yearLevel">Year Level</label>
+                    <select id="yearLevel" th:field="*{yearLevel}">
+                        <option value="">-- Select Year --</option>
+                        <option value="1st Year">1st Year</option>
+                        <option value="2nd Year">2nd Year</option>
+                        <option value="3rd Year">3rd Year</option>
+                        <option value="4th Year">4th Year</option>
+                    </select>
+                    <small class="error" th:if="${#fields.hasErrors('yearLevel')}" th:errors="*{yearLevel}"></small>
+
+                    <div class="btn-row">
+                        <button type="submit">Register Student</button>
+                        <a class="btn-light" href="/">Clear</a>
+                    </div>
+                </form>
+            </article>
+
+            <article class="panel stat-panel">
+                <h2>Quick Stats</h2>
+                <div class="stats">
+                    <div class="stat-box">
+                        <span>Total Students</span>
+                        <strong th:text="${#lists.size(students)}">0</strong>
+                    </div>
+                    <div class="stat-box">
+                        <span>Top Category</span>
+                        <strong>Registration</strong>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="panel table-panel">
+            <h2>Registered Students</h2>
+            <table th:if="${!#lists.isEmpty(students)}">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Number</th>
+                    <th>Email</th>
+                    <th>Gender</th>
+                    <th>Course</th>
+                    <th>Year</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="s : ${students}">
+                    <td th:text="${s.name}"></td>
+                    <td th:text="${s.studentNumber}"></td>
+                    <td th:text="${s.email}"></td>
+                    <td th:text="${s.gender} ?: '-'"></td>
+                    <td th:text="${s.course}"></td>
+                    <td th:text="${s.yearLevel}"></td>
+                </tr>
+                </tbody>
+            </table>
+            <p th:if="${#lists.isEmpty(students)}" class="empty-state">No students added yet.</p>
+        </section>
+    </main>
+</div>
+</body>
+</html>
