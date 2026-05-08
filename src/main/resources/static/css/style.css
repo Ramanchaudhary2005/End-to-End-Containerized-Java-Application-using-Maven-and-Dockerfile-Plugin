@@ -56,6 +56,11 @@ body {
     background: rgba(255, 255, 255, 0.14);
 }
 
+.sidebar a.active {
+    background: rgba(255, 255, 255, 0.22);
+    font-weight: 700;
+}
+
 .main-content {
     padding: 22px 26px;
 }

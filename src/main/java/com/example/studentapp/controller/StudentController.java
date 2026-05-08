@@ -21,8 +21,37 @@ public class StudentController {
 
     @GetMapping("/")
     public String showDashboard(Model model) {
-        model.addAttribute("student", new Student());
-        model.addAttribute("students", studentService.getAllStudents());
+        populateCommonModel(model, "dashboard");
+        return "index";
+    }
+
+    @GetMapping("/dashboard")
+    public String showDashboardPage(Model model) {
+        populateCommonModel(model, "dashboard");
+        return "index";
+    }
+
+    @GetMapping("/students")
+    public String showStudentsPage(Model model) {
+        populateCommonModel(model, "students");
+        return "index";
+    }
+
+    @GetMapping("/courses")
+    public String showCoursesPage(Model model) {
+        populateCommonModel(model, "courses");
+        return "index";
+    }
+
+    @GetMapping("/results")
+    public String showResultsPage(Model model) {
+        populateCommonModel(model, "results");
+        return "index";
+    }
+
+    @GetMapping("/settings")
+    public String showSettingsPage(Model model) {
+        populateCommonModel(model, "settings");
         return "index";
     }
 
@@ -31,11 +60,17 @@ public class StudentController {
                              BindingResult bindingResult,
                              Model model) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("students", studentService.getAllStudents());
+            populateCommonModel(model, "students");
             return "index";
         }
 
         studentService.addStudent(student);
-        return "redirect:/";
+        return "redirect:/students";
+    }
+
+    private void populateCommonModel(Model model, String activePage) {
+        model.addAttribute("student", new Student());
+        model.addAttribute("students", studentService.getAllStudents());
+        model.addAttribute("activePage", activePage);
     }
 }
