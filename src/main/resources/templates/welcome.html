@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome | School Portal</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="auth-body">
+<div class="auth-card">
+    <h1>Welcome to E‑Skool Portal</h1>
+    <p>Login as Student or Teacher, or create a new account.</p>
+    <div class="btn-row" style="margin-top:14px;">
+        <a class="btn-light" th:href="@{/login}" style="flex:1; text-align:center; text-decoration:none;">Login</a>
+        <a class="btn-light" th:href="@{/register}" style="flex:1; text-align:center; text-decoration:none;">Register</a>
+    </div>
+</div>
+</body>
+</html>

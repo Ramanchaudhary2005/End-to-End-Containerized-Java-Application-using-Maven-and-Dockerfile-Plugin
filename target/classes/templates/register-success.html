@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Successful</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="auth-body">
+<div class="auth-card">
+    <h1>Registration Successful</h1>
+    <p>Your Registration Number (Username) is:</p>
+    <p style="font-size:1.2rem; font-weight:800;" th:text="${registrationNumber}">REG-NO</p>
+    <p>Use this Registration Number + your password to login.</p>
+    <div class="btn-row" style="margin-top:14px;">
+        <a class="btn-light" th:href="@{/login}" style="flex:1; text-align:center; text-decoration:none;">Go to Login</a>
+        <a class="btn-light" th:href="@{/welcome}" style="flex:1; text-align:center; text-decoration:none;">Back to Home</a>
+    </div>
+</div>
+</body>
+</html>

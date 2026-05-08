@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<header class="page-header">
+    <div>
+        <h1>Student Performance Dashboard</h1>
+        <p th:if="${student != null}" th:text="${student.name + ' | ' + student.course + ' | ' + student.yearLevel}"></p>
+    </div>
+    <form th:action="@{/logout}" method="post"><button class="btn-light" type="submit">Logout</button></form>
+</header>
+
+<main class="dashboard-grid">
+    <section class="card" th:if="${errorMessage != null}">
+        <p class="error" th:text="${errorMessage}"></p>
+    </section>
+
+    <section class="card kpi-row" th:if="${student != null}">
+        <div class="kpi"><span>Attendance %</span><strong th:text="${#numbers.formatDecimal(attendanceRate, 1, 2)}">0</strong></div>
+        <div class="kpi"><span>Overall Average</span><strong th:text="${#numbers.formatDecimal(overallAverage, 1, 2)}">0</strong></div>
+        <div class="kpi"><span>Total Subjects</span><strong th:text="${#maps.size(subjectAverages)}">0</strong></div>
+    </section>
+
+    <section class="card span-2" th:if="${student != null}">
+        <h2>Subject-wise Marks Graph</h2>
+        <canvas id="studentChart"></canvas>
+    </section>
+
+    <section class="card span-2" th:if="${student != null}">
+        <h2>My Marks</h2>
+        <table>
+            <thead><tr><th>Subject</th><th>Exam</th><th>Score</th></tr></thead>
+            <tbody>
+            <tr th:each="m : ${marks}">
+                <td th:text="${m.subject.name}"></td>
+                <td th:text="${m.examType}"></td>
+                <td th:text="${m.score}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="card span-2" th:if="${student != null}">
+        <h2>My Attendance</h2>
+        <table>
+            <thead><tr><th>Date</th><th>Subject</th><th>Status</th></tr></thead>
+            <tbody>
+            <tr th:each="a : ${attendanceRows}">
+                <td th:text="${a.attendanceDate}"></td>
+                <td th:text="${a.subject.name}"></td>
+                <td th:text="${a.status}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+
+<script th:inline="javascript">
+    const labels = /*[[${subjectLabels}]]*/ '';
+    const scores = /*[[${subjectScores}]]*/ '';
+    if (labels.length > 0) {
+        const labelArray = labels.split(',');
+        const scoreArray = scores.split(',').map(Number);
+        new Chart(document.getElementById('studentChart'), {
+            type: 'line',
+            data: {
+                labels: labelArray,
+                datasets: [{ label: 'Average Subject Score', data: scoreArray, borderColor: '#6a3df0', fill: false, tension: 0.3 }]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } } }
+        });
+    }
+</script>
+</body>
+</html>

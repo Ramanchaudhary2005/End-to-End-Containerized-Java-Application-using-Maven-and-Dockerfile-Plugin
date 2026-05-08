@@ -1,77 +1,84 @@
-# End-to-End Containerized Java Application
+# Advanced School Portal (Spring Boot + MySQL + Docker)
 
-This project demonstrates a complete DevOps-style workflow:
+This project now provides a full school portal with separate Teacher and Student login flows.
 
-1. Build a Java web app using Spring Boot
-2. Package it as a runnable JAR with Maven
-3. Build a Docker image using a Dockerfile and Maven Dockerfile plugin
-4. Run it locally in a container
-5. Push image to Docker Hub
+## Features
+
+- Role-based login and authorization (Teacher / Student)
+- Teacher dashboard:
+  - Add student details
+  - Upload subject-wise marks
+  - Record attendance
+  - See class topper and subject toppers
+  - Visual analytics for subject averages
+- Student dashboard:
+  - View own marks
+  - View own attendance
+  - Subject-wise score graph
 
 ## Tech Stack
 
 - Java 17
-- Spring Boot
-- Thymeleaf (HTML/CSS UI)
+- Spring Boot 3
+- Spring Security
+- Spring Data JPA
+- Thymeleaf + Chart.js
+- MySQL
 - Maven
 - Docker
-- Spotify Dockerfile Maven Plugin
 
-## Run Locally (without Docker)
+## Local Setup
+
+Set MySQL environment values (PowerShell example):
+
+```powershell
+$env:DB_URL="jdbc:mysql://localhost:3306/student_portal?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+$env:DB_USERNAME="root"
+$env:DB_PASSWORD="root"
+```
+
+Run the app:
 
 ```bash
 mvn spring-boot:run
 ```
 
-Open: http://localhost:8080
+App URL: `http://localhost:9090/login`
 
-## Build JAR
+## Demo Accounts
+
+- Teacher: `teacher1` / `teacher123`
+- Student: `student1` / `student123`
+
+## Build and Package
 
 ```bash
 mvn clean package
 ```
 
-Output JAR:
+## Docker Run
 
-`target/student-app-0.0.1-SNAPSHOT.jar`
-
-## Build Docker Image with Maven Plugin
-
-Update Docker Hub username in `pom.xml`:
-
-`<docker.image.prefix>your-dockerhub-username</docker.image.prefix>`
-
-Then run:
+Build:
 
 ```bash
-mvn clean package dockerfile:build
+docker build -t student-app:local .
 ```
 
-## Run Docker Container
+Run:
 
 ```bash
-docker run -d -p 8080:8080 your-dockerhub-username/student-app:0.0.1-SNAPSHOT
+docker run --rm -p 9090:9090 \
+  -e DB_URL="jdbc:mysql://host.docker.internal:3306/student_portal?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC" \
+  -e DB_USERNAME="root" \
+  -e DB_PASSWORD="root" \
+  student-app:local
 ```
 
-## Push Image to Docker Hub
+## CI/CD Notes
 
-```bash
-docker login
-docker push your-dockerhub-username/student-app:0.0.1-SNAPSHOT
-```
-
-## Maven Lifecycle Used
-
-- `compile`: compile source code
-- `test`: run tests
-- `package`: create executable JAR
-
-## Folder Structure
-
-```text
-src/main/java/...      -> Java backend logic
-src/main/resources/templates -> HTML UI
-src/main/resources/static    -> CSS
-Dockerfile             -> container build instructions
-pom.xml                -> Maven build and Docker plugin config
-```
+- Workflow is in `.github/workflows/pipeline.yml`
+- Pipeline uses Java 17
+- Docker Hub secrets required:
+  - `DOCKERHUB_USERNAME`
+  - `DOCKERHUB_TOKEN`
+- Port used by application is `9090` (container mapped to host `8080` during verification step)
