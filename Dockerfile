@@ -1,6 +1,5 @@
-FROM eclipse-temurin:17-jre
-ARG JAR_FILE=target/student-app-0.0.1-SNAPSHOT.jar
-WORKDIR /app
-COPY ${JAR_FILE} app.jar
-EXPOSE 9090
-ENTRYPOINT ["java", "-jar", "app.jar"]
+FROM nginx:1.27-alpine
+
+COPY src/main/resources/static/ /usr/share/nginx/html/
+
+EXPOSE 80

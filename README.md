@@ -1,84 +1,82 @@
-# Advanced School Portal (Spring Boot + MySQL + Docker)
+# Frontend Teacher Portal with Maven, Docker, and GitHub Actions
 
-This project now provides a full school portal with separate Teacher and Student login flows.
+This project is now a frontend-only teacher portal. It does not use Spring Boot, Java controllers, databases, or backend APIs.
 
 ## Features
 
-- Role-based login and authorization (Teacher / Student)
-- Teacher dashboard:
-  - Add student details
-  - Upload subject-wise marks
-  - Record attendance
-  - See class topper and subject toppers
-  - Visual analytics for subject averages
-- Student dashboard:
-  - View own marks
-  - View own attendance
-  - Subject-wise score graph
+- Add, list, and delete students
+- Upload subject-wise marks
+- Record attendance
+- View score graphs with Chart.js
+- See class topper and subject-wise toppers
+- Generate report cards
+- Download report cards as PDF
+- Store all data in browser `localStorage`
 
 ## Tech Stack
 
-- Java 17
-- Spring Boot 3
-- Spring Security
-- Spring Data JPA
-- Thymeleaf + Chart.js
-- MySQL
-- Maven
-- Docker
+- HTML
+- CSS
+- JavaScript
+- Browser `localStorage`
+- Chart.js
+- jsPDF
+- Maven for packaging static files
+- Docker with Nginx
+- GitHub Actions for CI/CD
 
-## Local Setup
+## Run Locally
 
-Set MySQL environment values (PowerShell example):
+Open this file in your browser:
 
-```powershell
-$env:DB_URL="jdbc:mysql://localhost:3306/student_portal?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
-$env:DB_USERNAME="root"
-$env:DB_PASSWORD="root"
+```text
+src/main/resources/static/index.html
 ```
 
-Run the app:
+No backend server is required.
 
-```bash
-mvn spring-boot:run
-```
-
-App URL: `http://localhost:9090/login`
-
-## Demo Accounts
-
-- Teacher: `teacher1` / `teacher123`
-- Student: `student1` / `student123`
-
-## Build and Package
+## Package with Maven
 
 ```bash
 mvn clean package
 ```
 
-## Docker Run
+The static site is copied to:
+
+```text
+target/site
+```
+
+## Run with Docker
 
 Build:
 
 ```bash
-docker build -t student-app:local .
+docker build -t teacher-portal-frontend:local .
 ```
 
 Run:
 
 ```bash
-docker run --rm -p 9090:9090 \
-  -e DB_URL="jdbc:mysql://host.docker.internal:3306/student_portal?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC" \
-  -e DB_USERNAME="root" \
-  -e DB_PASSWORD="root" \
-  student-app:local
+docker run --rm -p 8080:80 teacher-portal-frontend:local
 ```
 
-## CI/CD Notes
+Open:
 
-- Workflow is in `.github/workflows/pipeline.yml`
-- Pipeline uses Java 17
-- Docker Hub secrets required:
-  - `DOCKERHUB_USERNAME`
-  - `DOCKERHUB_TOKEN`
-- Port used by application is `9090` (container mapped to host `8080` during verification step)
+```text
+http://localhost:8080
+```
+
+## GitHub Actions
+
+The workflow in `.github/workflows/pipeline.yml`:
+
+- packages the static site with Maven
+- builds the Nginx Docker image
+- pushes the image to Docker Hub
+- runs the image and verifies the site is reachable
+
+Required repository secrets:
+
+- `DOCKERHUB_USERNAME`
+- `DOCKERHUB_TOKEN`
