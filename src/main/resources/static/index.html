@@ -1,1038 +1,2206 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EduTrack — Teacher Performance Portal</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-<style>
-:root {
-  --navy: #0a0f1e;
-  --navy2: #111827;
-  --navy3: #1a2438;
-  --navy4: #243049;
-  --navy5: #2e3d5c;
-  --accent: #5b8cff;
-  --accent2: #7ca4ff;
-  --accent-glow: rgba(91,140,255,0.18);
-  --teal: #00d4aa;
-  --teal2: #00b891;
-  --amber: #f5a623;
-  --rose: #ff5e7e;
-  --violet: #a78bfa;
-  --green: #34d399;
-  --cyan: #06b6d4;
-  --pink: #ec4899;
-  --text1: #e8eef8;
-  --text2: #96a8c8;
-  --text3: #5a6e8e;
-  --border: rgba(91,140,255,0.12);
-  --border2: rgba(91,140,255,0.22);
-  --surface: rgba(17,24,39,0.9);
-  --surface2: rgba(26,36,56,0.8);
-  --radius: 14px;
-  --radius-sm: 8px;
-  --shadow: 0 8px 32px rgba(0,0,0,0.4);
-  --shadow-sm: 0 2px 12px rgba(0,0,0,0.3);
-  --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduTrack — Teacher Performance Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <style>
+    :root {
+      --navy: #0a0f1e;
+      --navy2: #111827;
+      --navy3: #1a2438;
+      --navy4: #243049;
+      --navy5: #2e3d5c;
+      --accent: #5b8cff;
+      --accent2: #7ca4ff;
+      --accent-glow: rgba(91, 140, 255, 0.18);
+      --teal: #00d4aa;
+      --teal2: #00b891;
+      --amber: #f5a623;
+      --rose: #ff5e7e;
+      --violet: #a78bfa;
+      --green: #34d399;
+      --cyan: #06b6d4;
+      --pink: #ec4899;
+      --text1: #e8eef8;
+      --text2: #96a8c8;
+      --text3: #5a6e8e;
+      --border: rgba(91, 140, 255, 0.12);
+      --border2: rgba(91, 140, 255, 0.22);
+      --surface: rgba(17, 24, 39, 0.9);
+      --surface2: rgba(26, 36, 56, 0.8);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.3);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes slideInRight{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
-@keyframes slideInLeft{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
-@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(91,140,255,0.4),var(--shadow)}50%{box-shadow:0 0 30px rgba(91,140,255,0.6),var(--shadow)}}
-@keyframes shimmer{0%{background-position:0%}100%{background-position:100%}}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-@keyframes rotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-@keyframes scaleIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px)
+      }
 
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{
-  font-family:'DM Sans',sans-serif;
-  background:var(--navy);
-  color:var(--text1);
-  min-height:100vh;
-  display:grid;
-  grid-template-columns:260px 1fr;
-  overflow-x:hidden;
-}
-body::before{
-  content:'';
-  position:fixed;
-  inset:0;
-  background:
-    radial-gradient(ellipse 800px 600px at 20% 10%, rgba(91,140,255,0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 600px 500px at 80% 80%, rgba(0,212,170,0.06) 0%, transparent 60%);
-  pointer-events:none;
-  z-index:0;
-}
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
 
-/* SIDEBAR */
-.sidebar{
-  position:sticky;top:0;
-  height:100vh;
-  background:rgba(10,15,30,0.96);
-  border-right:1px solid var(--border);
-  display:flex;flex-direction:column;
-  padding:24px 18px;
-  gap:0;
-  z-index:100;
-  backdrop-filter:blur(20px);
-}
-.brand{padding:0 6px 28px;border-bottom:1px solid var(--border);margin-bottom:20px}
-.brand-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--teal));border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;margin-bottom:10px;box-shadow:0 4px 16px rgba(91,140,255,0.3)}
-.brand-name{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--text1);letter-spacing:-0.02em}
-.brand-sub{color:var(--text3);font-size:0.75rem;margin-top:2px;font-weight:400}
-.nav-section{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);padding:0 10px;margin:12px 0 6px}
-.nav-link{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;text-decoration:none;color:var(--text2);font-size:0.88rem;font-weight:500;transition:var(--transition);margin-bottom:2px;cursor:pointer;border:none;background:none;width:100%;text-align:left;border-left:2px solid transparent;position:relative}
-.nav-link svg{width:18px;height:18px;flex-shrink:0;opacity:0.7;transition:opacity 0.2s}
-.nav-link:hover{background:var(--accent-glow);color:var(--accent2);border-left-color:var(--accent)}
-.nav-link:hover svg{opacity:1;stroke:var(--accent2);animation:slideInRight 0.3s}
-.nav-link.active{background:rgba(91,140,255,0.15);color:#fff;font-weight:600;box-shadow:inset 0 0 12px rgba(91,140,255,0.1);border-left-color:var(--accent)}
-.sidebar-footer{margin-top:auto;padding-top:20px;border-top:1px solid var(--border)}
-.sidebar-footer button{width:100%;padding:10px 14px;border-radius:10px;background:transparent;border:1px solid var(--border2);color:var(--text2);font-size:0.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:var(--transition);font-family:'DM Sans',sans-serif}
-.sidebar-footer button:hover{background:rgba(255,94,126,0.12);border-color:var(--rose);color:var(--rose);transform:translateX(2px)}
-.current-time{font-size:0.78rem;color:var(--text3);padding:0 10px;margin-bottom:8px}
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(-12px)
+      }
 
-/* MAIN */
-.main{display:grid;gap:24px;padding:32px;position:relative;z-index:1;align-content:start}
+      to {
+        opacity: 1;
+        transform: translateX(0)
+      }
+    }
 
-/* HERO */
-.hero{background:linear-gradient(135deg, rgba(26,36,56,0.98) 0%, rgba(17,24,39,0.96) 50%, rgba(10,15,30,0.95) 100%);border:1px solid var(--border2);border-radius:20px;padding:36px;display:flex;align-items:center;justify-content:space-between;gap:24px;position:relative;overflow:hidden;animation:fadeInUp 0.7s ease-out;box-shadow:0 16px 48px rgba(91,140,255,0.15)}
-.hero::before{content:'';position:absolute;right:-60px;top:-80px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle, rgba(91,140,255,0.12) 0%, transparent 70%);animation:glow 4s ease-in-out infinite}
-.hero::after{content:'';position:absolute;left:-80px;bottom:-100px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle, rgba(0,212,170,0.08) 0%, transparent 70%);animation:pulse 5s ease-in-out infinite}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,212,170,0.12);border:1px solid rgba(0,212,170,0.25);color:var(--teal);font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;padding:5px 12px;border-radius:20px;margin-bottom:16px}
-.hero-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite}
-.hero h1{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,3vw,2.8rem);font-weight:800;line-height:1.1;letter-spacing:-0.03em;color:var(--text1);margin-bottom:12px}
-.hero h1 span{color:var(--accent2)}
-.hero p{color:var(--text2);font-size:0.95rem;line-height:1.6;max-width:500px}
-.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
-.btn-primary{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent),#3d6be8);color:#fff;padding:12px 22px;border-radius:10px;font-weight:600;font-size:0.88rem;border:none;cursor:pointer;text-decoration:none;transition:var(--transition);font-family:'DM Sans',sans-serif;box-shadow:0 4px 20px rgba(91,140,255,0.35);position:relative;overflow:hidden}
-.btn-primary::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:rgba(255,255,255,0.2);transition:left 0.3s}
-.btn-primary:hover::before{left:100%}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(91,140,255,0.5)}
-.btn-primary:active{transform:translateY(0)}
-.btn-secondary{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--text1);padding:12px 22px;border-radius:10px;font-weight:600;font-size:0.88rem;border:1px solid var(--border2);cursor:pointer;text-decoration:none;transition:var(--transition);font-family:'DM Sans',sans-serif}
-.btn-secondary:hover{background:var(--accent-glow);border-color:var(--accent);color:var(--accent2);transform:translateY(-2px)}
-.hero-stat-group{display:grid;grid-template-columns:1fr 1fr;gap:12px;min-width:260px;animation:slideInRight 0.8s ease-out}
-.hero-stat{background:rgba(10,15,30,0.7);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;transition:var(--transition);backdrop-filter:blur(10px)}
-.hero-stat:hover{border-color:var(--accent);background:rgba(10,15,30,0.9);transform:translateY(-2px)}
-.hero-stat-value{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--text1)}
-.hero-stat-label{color:var(--text3);font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-top:4px}
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(12px)
+      }
 
-/* METRICS */
-.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.metric-card{background:linear-gradient(135deg,var(--navy3),var(--navy2));border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;transition:var(--transition);animation:fadeInUp 0.5s ease-out;cursor:pointer}
-.metric-card:hover{border-color:var(--accent);transform:translateY(-6px);box-shadow:0 12px 36px rgba(91,140,255,0.2);background:linear-gradient(135deg,var(--navy4),var(--navy3))}
-.metric-icon{font-size:1.4rem;margin-bottom:8px;opacity:0.8}
-.metric-label{font-size:0.75rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px}
-.metric-value{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--text1);line-height:1}
-.metric-sub{font-size:0.78rem;color:var(--text3);margin-top:6px}
+      to {
+        opacity: 1;
+        transform: translateX(0)
+      }
+    }
 
-/* PANEL */
-.panel{background:linear-gradient(135deg,rgba(26,36,56,0.9),rgba(17,24,39,0.95));border:1px solid var(--border);border-radius:var(--radius);padding:24px;position:relative;overflow:hidden;transition:var(--transition);animation:fadeInUp 0.6s ease-out;box-shadow:var(--shadow-sm)}
-.panel:hover{border-color:var(--accent);box-shadow:0 8px 32px rgba(91,140,255,0.15)}
-.panel-accent{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0.8;animation:glow 3s ease-in-out infinite}
+    @keyframes pulse {
 
-/* SECTION HEADERS */
-.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.section-eyebrow{display:inline-block;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent2);background:rgba(91,140,255,0.1);padding:4px 10px;border-radius:6px;margin-bottom:8px}
-.section-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--text1);letter-spacing:-0.01em}
+      0%,
+      100% {
+        opacity: 1
+      }
 
-/* FORMS */
-.form-grid{display:grid;gap:14px}
-.form-two{grid-template-columns:repeat(2,1fr)}
-.field{display:grid;gap:6px;animation:fadeInUp 0.5s ease-out}
-.field label{font-size:0.8rem;font-weight:600;color:var(--text2)}
-.field input,.field select,.field textarea{background:rgba(10,15,30,0.8);border:1px solid rgba(91,140,255,0.15);border-radius:var(--radius-sm);color:var(--text1);padding:11px 14px;font-size:0.88rem;font-family:'DM Sans',sans-serif;transition:var(--transition);width:100%;appearance:none;-webkit-appearance:none}
-.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent);background:rgba(10,15,30,0.95);box-shadow:0 0 0 3px rgba(91,140,255,0.1)}
-.field input::placeholder{color:var(--text3)}
-.form-btn{background:linear-gradient(135deg,var(--accent),#3d6be8);border:none;border-radius:var(--radius-sm);color:#fff;padding:12px 20px;font-weight:700;font-size:0.88rem;cursor:pointer;width:100%;font-family:'DM Sans',sans-serif;transition:var(--transition);box-shadow:0 4px 16px rgba(91,140,255,0.3)}
-.form-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(91,140,255,0.4)}
-.form-btn:active{transform:translateY(0)}
+      50% {
+        opacity: 0.5
+      }
+    }
 
-/* TABLES */
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:500px;font-size:0.85rem}
-thead tr{background:rgba(10,15,30,0.6)}
-th{padding:11px 14px;color:var(--text3);font-weight:700;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;text-align:left;border-bottom:2px solid var(--border2);background:rgba(10,15,30,0.8);position:sticky;top:0}
-tr{transition:var(--transition)}
-tbody tr:hover{background:rgba(91,140,255,0.08)}
-td{padding:12px 14px;color:var(--text2);border-bottom:1px solid rgba(91,140,255,0.06);vertical-align:middle}
-.td-name{color:var(--text1);font-weight:600}
-.td-score{font-weight:600;color:var(--accent2)}
+    @keyframes glow {
 
-/* BUTTONS */
-.btn-danger{background:rgba(255,94,126,0.1);border:1px solid rgba(255,94,126,0.3);color:var(--rose);padding:6px 12px;border-radius:6px;font-size:0.75rem;cursor:pointer;transition:var(--transition);font-family:'DM Sans',sans-serif;font-weight:600}
-.btn-danger:hover{background:rgba(255,94,126,0.2);border-color:var(--rose);transform:translateY(-1px)}
+      0%,
+      100% {
+        box-shadow: 0 0 20px rgba(91, 140, 255, 0.4), var(--shadow)
+      }
 
-.btn-download{background:linear-gradient(135deg,var(--teal),#00a878);border:none;border-radius:8px;color:#fff;padding:8px 14px;font-size:0.75rem;font-weight:600;cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif}
-.btn-download:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,212,170,0.3)}
+      50% {
+        box-shadow: 0 0 30px rgba(91, 140, 255, 0.6), var(--shadow)
+      }
+    }
 
-/* SEARCH BAR */
-.search-bar{display:flex;align-items:center;background:rgba(10,15,30,0.6);border:1px solid var(--border);border-radius:10px;padding:8px 12px;transition:var(--transition)}
-.search-bar:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,140,255,0.1)}
-.search-icon{width:16px;height:16px;color:var(--text3);flex-shrink:0;margin-right:6px}
-.search-bar input{background:transparent;border:none;color:var(--text1);font-size:0.85rem;width:100%;outline:none}
-.search-bar input::placeholder{color:var(--text3)}
+    @keyframes shimmer {
+      0% {
+        background-position: 0%
+      }
 
-/* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;background:linear-gradient(135deg,var(--navy3),var(--navy2));border:1px solid var(--border);border-radius:12px;color:var(--text1);padding:14px 18px;border-radius:10px;display:flex;align-items:center;gap:10px;opacity:0;transform:translateY(12px);transition:var(--transition);pointer-events:none;font-size:0.88rem;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:9999}
-.toast.show{opacity:1;transform:translateY(0);pointer-events:auto;animation:slideInLeft 0.4s ease-out}
-.toast-dot{width:8px;height:8px;border-radius:50%;background:var(--accent2)}
+      100% {
+        background-position: 100%
+      }
+    }
 
-/* PROGRESS BAR */
-.progress-bar-bg{width:100%;height:6px;background:rgba(91,140,255,0.1);border-radius:3px;overflow:hidden}
-.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--teal));transition:width 0.3s}
+    @keyframes bounce {
 
-/* TOPPER LIST */
-.topper-list{display:grid;gap:10px}
-.topper-row{display:flex;justify-content:space-between;align-items:center;padding:12px;background:rgba(10,15,30,0.4);border-radius:10px;border:1px solid var(--border);transition:var(--transition)}
-.topper-row:hover{background:rgba(10,15,30,0.6);border-color:var(--accent)}
-.topper-subject{font-size:0.85rem;font-weight:600;color:var(--text2)}
-.topper-name{font-weight:700;color:var(--text1);font-family:'Syne',sans-serif}
-.topper-score{background:rgba(91,140,255,0.2);color:var(--accent2);padding:2px 8px;border-radius:4px;margin-left:8px;font-size:0.8rem}
+      0%,
+      100% {
+        transform: translateY(0)
+      }
 
-/* ATTENDANCE SUMMARY */
-.att-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
-.att-box{background:rgba(10,15,30,0.5);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;transition:var(--transition)}
-.att-box:hover{transform:translateY(-2px)}
-.att-box-p{border-color:rgba(52,211,153,0.3)}
-.att-box-a{border-color:rgba(255,94,126,0.3)}
-.att-box-l{border-color:rgba(245,166,35,0.3)}
-.att-box-num{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;line-height:1;margin-bottom:4px}
-.att-box-p .att-box-num{color:var(--green)}
-.att-box-a .att-box-num{color:var(--rose)}
-.att-box-l .att-box-num{color:var(--amber)}
-.att-box-label{font-size:0.7rem;text-transform:uppercase;font-weight:700;letter-spacing:0.08em;color:var(--text3)}
+      50% {
+        transform: translateY(-4px)
+      }
+    }
 
-/* REPORT CARD */
-.report-card{background:linear-gradient(135deg,var(--navy3),var(--navy2));border:1px solid var(--border);border-radius:14px;padding:16px;transition:var(--transition);animation:scaleIn 0.5s ease-out}
-.report-card:hover{transform:translateY(-8px);box-shadow:0 12px 40px rgba(91,140,255,0.25);border-color:var(--accent)}
-.report-head{display:flex;justify-content:space-between;align-items:start;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
-.report-student-id{font-size:0.7rem;color:var(--text3);text-transform:uppercase;font-weight:700}
-.report-student-name{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:800;color:var(--text1);margin-top:2px}
-.report-grade-badge{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;padding:8px 12px;border-radius:8px;text-align:center;min-width:50px}
-.grade-A-plus{background:linear-gradient(135deg,rgba(52,211,153,0.2),rgba(16,185,129,0.1));border:1px solid rgba(52,211,153,0.4);color:var(--green)}
-.grade-A{background:linear-gradient(135deg,rgba(59,130,246,0.2),rgba(37,99,235,0.1));border:1px solid rgba(59,130,246,0.4);color:var(--accent2)}
-.grade-B{background:linear-gradient(135deg,rgba(167,139,250,0.2),rgba(139,92,246,0.1));border:1px solid rgba(167,139,250,0.4);color:var(--violet)}
-.grade-C{background:linear-gradient(135deg,rgba(245,166,35,0.2),rgba(217,119,6,0.1));border:1px solid rgba(245,166,35,0.4);color:var(--amber)}
-.grade-D,.grade-NS{background:linear-gradient(135deg,rgba(255,94,126,0.2),rgba(239,68,68,0.1));border:1px solid rgba(255,94,126,0.4);color:var(--rose)}
-.report-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.report-stat{background:rgba(10,15,30,0.4);padding:10px;border-radius:8px;border:1px solid var(--border);text-align:center}
-.report-stat-label{font-size:0.7rem;color:var(--text3);text-transform:uppercase;font-weight:700}
-.report-stat-value{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:800;color:var(--accent2);margin-top:4px}
-.report-table{width:100%;border-collapse:collapse;font-size:0.75rem;margin-bottom:12px}
-.report-table th{background:rgba(91,140,255,0.1);padding:8px;text-align:left;font-weight:700;color:var(--text2);border-bottom:1px solid var(--border)}
-.report-table td{padding:8px;border-bottom:1px solid rgba(91,140,255,0.06);color:var(--text2)}
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg)
+      }
 
-/* RESPONSIVE */
-@media(max-width:1200px){
-  body{grid-template-columns:1fr}
-  .sidebar{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:16px 20px}
-  .brand{padding:0;border:none;margin:0;display:flex;align-items:center;gap:10px}
-  .nav-section,.current-time{display:none}
-  .analytics-grid,.workspace-grid{grid-template-columns:repeat(2,1fr)}
-  .metrics{grid-template-columns:repeat(2,1fr)}
-  .hero{flex-direction:column;align-items:flex-start}
-  .hero-stat-group{min-width:auto}
-}
-@media(max-width:768px){
-  .main{padding:16px;gap:16px}
-  .sidebar{justify-content:flex-start}
-  .hero{flex-direction:column;align-items:flex-start}
-  .analytics-grid,.workspace-grid,.report-grid{grid-template-columns:1fr}
-  .metrics{grid-template-columns:repeat(2,1fr)}
-  .form-two{grid-template-columns:1fr}
-  .hero-stat-group{display:none}
-  .search-bar{font-size:0.75rem}
-}
-@media(max-width:480px){
-  .metrics,.report-grid{grid-template-columns:1fr}
-  .hero h1{font-size:1.4rem}
-  .hero p{font-size:0.85rem}
-  .sidebar{padding:12px}
-  .brand-icon{width:32px;height:32px;font-size:14px}
-  .main{padding:12px;gap:12px}
-  .table-wrap{font-size:0.75rem}
-  th,td{padding:8px}
-}
+      to {
+        transform: rotate(360deg)
+      }
+    }
 
-/* Chart canvas sizing */
-canvas{display:block;width:100% !important;height:260px !important;max-height:420px;border-radius:10px}
-.panel canvas, .hero canvas{height:240px !important;max-height:360px}
-#overviewChart{height:200px !important}
-#subjectChart,#studentChart,#attRateChart,#marksSubjectChart{height:260px !important}
-#attendanceChart{height:180px !important}
-@media(max-width:1200px){canvas{height:220px !important}}
-@media(max-width:768px){canvas{height:180px !important}}
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95)
+      }
 
-/* Spacing fixes */
-.panel, .metric-card, .hero-stat, .report-card, .topper-row, .table-wrap, .workspace-grid > *, .analytics-grid > *, .report-grid > * {
-  margin-bottom:12px;
-}
-.workspace-grid, .analytics-grid, .report-grid, .metrics { display:grid; gap:16px }
-</style>
+      to {
+        opacity: 1;
+        transform: scale(1)
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy);
+      color: var(--text1);
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 800px 600px at 20% 10%, rgba(91, 140, 255, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 600px 500px at 80% 80%, rgba(0, 212, 170, 0.06) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      background: rgba(10, 15, 30, 0.96);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 18px;
+      gap: 0;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+    }
+
+    .brand {
+      padding: 0 6px 28px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent), var(--teal));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 16px rgba(91, 140, 255, 0.3)
+    }
+
+    .brand-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text1);
+      letter-spacing: -0.02em
+    }
+
+    .brand-sub {
+      color: var(--text3);
+      font-size: 0.75rem;
+      margin-top: 2px;
+      font-weight: 400
+    }
+
+    .nav-section {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text3);
+      padding: 0 10px;
+      margin: 12px 0 6px
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text2);
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: var(--transition);
+      margin-bottom: 2px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      border-left: 2px solid transparent;
+      position: relative
+    }
+
+    .nav-link svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      opacity: 0.7;
+      transition: opacity 0.2s
+    }
+
+    .nav-link:hover {
+      background: var(--accent-glow);
+      color: var(--accent2);
+      border-left-color: var(--accent)
+    }
+
+    .nav-link:hover svg {
+      opacity: 1;
+      stroke: var(--accent2);
+      animation: slideInRight 0.3s
+    }
+
+    .nav-link.active {
+      background: rgba(91, 140, 255, 0.15);
+      color: #fff;
+      font-weight: 600;
+      box-shadow: inset 0 0 12px rgba(91, 140, 255, 0.1);
+      border-left-color: var(--accent)
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid var(--border)
+    }
+
+    .sidebar-footer button {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--text2);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      font-family: 'DM Sans', sans-serif
+    }
+
+    .sidebar-footer button:hover {
+      background: rgba(255, 94, 126, 0.12);
+      border-color: var(--rose);
+      color: var(--rose);
+      transform: translateX(2px)
+    }
+
+    .current-time {
+      font-size: 0.78rem;
+      color: var(--text3);
+      padding: 0 10px;
+      margin-bottom: 8px
+    }
+
+    /* MAIN */
+    .main {
+      display: grid;
+      gap: 24px;
+      padding: 32px;
+      position: relative;
+      z-index: 1;
+      align-content: start
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, rgba(26, 36, 56, 0.98) 0%, rgba(17, 24, 39, 0.96) 50%, rgba(10, 15, 30, 0.95) 100%);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      padding: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp 0.7s ease-out;
+      box-shadow: 0 16px 48px rgba(91, 140, 255, 0.15)
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      right: -60px;
+      top: -80px;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(91, 140, 255, 0.12) 0%, transparent 70%);
+      animation: glow 4s ease-in-out infinite
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      left: -80px;
+      bottom: -100px;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 212, 170, 0.08) 0%, transparent 70%);
+      animation: pulse 5s ease-in-out infinite
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 212, 170, 0.12);
+      border: 1px solid rgba(0, 212, 170, 0.25);
+      color: var(--teal);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-bottom: 16px
+    }
+
+    .hero-eyebrow-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--teal);
+      animation: pulse 2s infinite
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--text1);
+      margin-bottom: 12px
+    }
+
+    .hero h1 span {
+      color: var(--accent2)
+    }
+
+    .hero p {
+      color: var(--text2);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      max-width: 500px
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--accent), #3d6be8);
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: var(--transition);
+      font-family: 'DM Sans', sans-serif;
+      box-shadow: 0 4px 20px rgba(91, 140, 255, 0.35);
+      position: relative;
+      overflow: hidden
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.2);
+      transition: left 0.3s
+    }
+
+    .btn-primary:hover::before {
+      left: 100%
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(91, 140, 255, 0.5)
+    }
+
+    .btn-primary:active {
+      transform: translateY(0)
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--text1);
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      border: 1px solid var(--border2);
+      cursor: pointer;
+      text-decoration: none;
+      transition: var(--transition);
+      font-family: 'DM Sans', sans-serif
+    }
+
+    .btn-secondary:hover {
+      background: var(--accent-glow);
+      border-color: var(--accent);
+      color: var(--accent2);
+      transform: translateY(-2px)
+    }
+
+    .hero-stat-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      min-width: 260px;
+      animation: slideInRight 0.8s ease-out
+    }
+
+    .hero-stat {
+      background: rgba(10, 15, 30, 0.7);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+      transition: var(--transition);
+      backdrop-filter: blur(10px)
+    }
+
+    .hero-stat:hover {
+      border-color: var(--accent);
+      background: rgba(10, 15, 30, 0.9);
+      transform: translateY(-2px)
+    }
+
+    .hero-stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text1)
+    }
+
+    .hero-stat-label {
+      color: var(--text3);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 4px
+    }
+
+    /* METRICS */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px
+    }
+
+    .metric-card {
+      background: linear-gradient(135deg, var(--navy3), var(--navy2));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+      animation: fadeInUp 0.5s ease-out;
+      cursor: pointer
+    }
+
+    .metric-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-6px);
+      box-shadow: 0 12px 36px rgba(91, 140, 255, 0.2);
+      background: linear-gradient(135deg, var(--navy4), var(--navy3))
+    }
+
+    .metric-icon {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+      opacity: 0.8
+    }
+
+    .metric-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px
+    }
+
+    .metric-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text1);
+      line-height: 1
+    }
+
+    .metric-sub {
+      font-size: 0.78rem;
+      color: var(--text3);
+      margin-top: 6px
+    }
+
+    /* PANEL */
+    .panel {
+      background: linear-gradient(135deg, rgba(26, 36, 56, 0.9), rgba(17, 24, 39, 0.95));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+      animation: fadeInUp 0.6s ease-out;
+      box-shadow: var(--shadow-sm)
+    }
+
+    .panel:hover {
+      border-color: var(--accent);
+      box-shadow: 0 8px 32px rgba(91, 140, 255, 0.15)
+    }
+
+    .panel-accent {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.8;
+      animation: glow 3s ease-in-out infinite
+    }
+
+    /* SECTION HEADERS */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px
+    }
+
+    .section-eyebrow {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent2);
+      background: rgba(91, 140, 255, 0.1);
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-bottom: 8px
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text1);
+      letter-spacing: -0.01em
+    }
+
+    /* FORMS */
+    .form-grid {
+      display: grid;
+      gap: 14px
+    }
+
+    .form-two {
+      grid-template-columns: repeat(2, 1fr)
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      animation: fadeInUp 0.5s ease-out
+    }
+
+    .field label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text2)
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      background: rgba(10, 15, 30, 0.8);
+      border: 1px solid rgba(91, 140, 255, 0.15);
+      border-radius: var(--radius-sm);
+      color: var(--text1);
+      padding: 11px 14px;
+      font-size: 0.88rem;
+      font-family: 'DM Sans', sans-serif;
+      transition: var(--transition);
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(10, 15, 30, 0.95);
+      box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.1)
+    }
+
+    .field input::placeholder {
+      color: var(--text3)
+    }
+
+    .form-btn {
+      background: linear-gradient(135deg, var(--accent), #3d6be8);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: #fff;
+      padding: 12px 20px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      width: 100%;
+      font-family: 'DM Sans', sans-serif;
+      transition: var(--transition);
+      box-shadow: 0 4px 16px rgba(91, 140, 255, 0.3)
+    }
+
+    .form-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(91, 140, 255, 0.4)
+    }
+
+    .form-btn:active {
+      transform: translateY(0)
+    }
+
+    /* TABLES */
+    .table-wrap {
+      overflow-x: auto
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 500px;
+      font-size: 0.85rem
+    }
+
+    thead tr {
+      background: rgba(10, 15, 30, 0.6)
+    }
+
+    th {
+      padding: 11px 14px;
+      color: var(--text3);
+      font-weight: 700;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      text-align: left;
+      border-bottom: 2px solid var(--border2);
+      background: rgba(10, 15, 30, 0.8);
+      position: sticky;
+      top: 0
+    }
+
+    tr {
+      transition: var(--transition)
+    }
+
+    tbody tr:hover {
+      background: rgba(91, 140, 255, 0.08)
+    }
+
+    td {
+      padding: 12px 14px;
+      color: var(--text2);
+      border-bottom: 1px solid rgba(91, 140, 255, 0.06);
+      vertical-align: middle
+    }
+
+    .td-name {
+      color: var(--text1);
+      font-weight: 600
+    }
+
+    .td-score {
+      font-weight: 600;
+      color: var(--accent2)
+    }
+
+    /* BUTTONS */
+    .btn-danger {
+      background: rgba(255, 94, 126, 0.1);
+      border: 1px solid rgba(255, 94, 126, 0.3);
+      color: var(--rose);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600
+    }
+
+    .btn-danger:hover {
+      background: rgba(255, 94, 126, 0.2);
+      border-color: var(--rose);
+      transform: translateY(-1px)
+    }
+
+    .btn-download {
+      background: linear-gradient(135deg, var(--teal), #00a878);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      padding: 8px 14px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'DM Sans', sans-serif
+    }
+
+    .btn-download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 212, 170, 0.3)
+    }
+
+    /* SEARCH BAR */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: rgba(10, 15, 30, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      transition: var(--transition)
+    }
+
+    .search-bar:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.1)
+    }
+
+    .search-icon {
+      width: 16px;
+      height: 16px;
+      color: var(--text3);
+      flex-shrink: 0;
+      margin-right: 6px
+    }
+
+    .search-bar input {
+      background: transparent;
+      border: none;
+      color: var(--text1);
+      font-size: 0.85rem;
+      width: 100%;
+      outline: none
+    }
+
+    .search-bar input::placeholder {
+      color: var(--text3)
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: linear-gradient(135deg, var(--navy3), var(--navy2));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text1);
+      padding: 14px 18px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: var(--transition);
+      pointer-events: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      z-index: 9999
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      animation: slideInLeft 0.4s ease-out
+    }
+
+    .toast-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent2)
+    }
+
+    /* PROGRESS BAR */
+    .progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: rgba(91, 140, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--teal));
+      transition: width 0.3s
+    }
+
+    /* TOPPER LIST */
+    .topper-list {
+      display: grid;
+      gap: 10px
+    }
+
+    .topper-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: rgba(10, 15, 30, 0.4);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      transition: var(--transition)
+    }
+
+    .topper-row:hover {
+      background: rgba(10, 15, 30, 0.6);
+      border-color: var(--accent)
+    }
+
+    .topper-subject {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text2)
+    }
+
+    .topper-name {
+      font-weight: 700;
+      color: var(--text1);
+      font-family: 'Syne', sans-serif
+    }
+
+    .topper-score {
+      background: rgba(91, 140, 255, 0.2);
+      color: var(--accent2);
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-left: 8px;
+      font-size: 0.8rem
+    }
+
+    /* ATTENDANCE SUMMARY */
+    .att-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 18px
+    }
+
+    .att-box {
+      background: rgba(10, 15, 30, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+      transition: var(--transition)
+    }
+
+    .att-box:hover {
+      transform: translateY(-2px)
+    }
+
+    .att-box-p {
+      border-color: rgba(52, 211, 153, 0.3)
+    }
+
+    .att-box-a {
+      border-color: rgba(255, 94, 126, 0.3)
+    }
+
+    .att-box-l {
+      border-color: rgba(245, 166, 35, 0.3)
+    }
+
+    .att-box-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 4px
+    }
+
+    .att-box-p .att-box-num {
+      color: var(--green)
+    }
+
+    .att-box-a .att-box-num {
+      color: var(--rose)
+    }
+
+    .att-box-l .att-box-num {
+      color: var(--amber)
+    }
+
+    .att-box-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--text3)
+    }
+
+    /* REPORT CARD */
+    .report-card {
+      background: linear-gradient(135deg, var(--navy3), var(--navy2));
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      transition: var(--transition);
+      animation: scaleIn 0.5s ease-out
+    }
+
+    .report-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 40px rgba(91, 140, 255, 0.25);
+      border-color: var(--accent)
+    }
+
+    .report-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .report-student-id {
+      font-size: 0.7rem;
+      color: var(--text3);
+      text-transform: uppercase;
+      font-weight: 700
+    }
+
+    .report-student-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text1);
+      margin-top: 2px
+    }
+
+    .report-grade-badge {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      padding: 8px 12px;
+      border-radius: 8px;
+      text-align: center;
+      min-width: 50px
+    }
+
+    .grade-A-plus {
+      background: linear-gradient(135deg, rgba(52, 211, 153, 0.2), rgba(16, 185, 129, 0.1));
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      color: var(--green)
+    }
+
+    .grade-A {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.1));
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      color: var(--accent2)
+    }
+
+    .grade-B {
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(139, 92, 246, 0.1));
+      border: 1px solid rgba(167, 139, 250, 0.4);
+      color: var(--violet)
+    }
+
+    .grade-C {
+      background: linear-gradient(135deg, rgba(245, 166, 35, 0.2), rgba(217, 119, 6, 0.1));
+      border: 1px solid rgba(245, 166, 35, 0.4);
+      color: var(--amber)
+    }
+
+    .grade-D,
+    .grade-NS {
+      background: linear-gradient(135deg, rgba(255, 94, 126, 0.2), rgba(239, 68, 68, 0.1));
+      border: 1px solid rgba(255, 94, 126, 0.4);
+      color: var(--rose)
+    }
+
+    .report-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px
+    }
+
+    .report-stat {
+      background: rgba(10, 15, 30, 0.4);
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      text-align: center
+    }
+
+    .report-stat-label {
+      font-size: 0.7rem;
+      color: var(--text3);
+      text-transform: uppercase;
+      font-weight: 700
+    }
+
+    .report-stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--accent2);
+      margin-top: 4px
+    }
+
+    .report-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+      margin-bottom: 12px
+    }
+
+    .report-table th {
+      background: rgba(91, 140, 255, 0.1);
+      padding: 8px;
+      text-align: left;
+      font-weight: 700;
+      color: var(--text2);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .report-table td {
+      padding: 8px;
+      border-bottom: 1px solid rgba(91, 140, 255, 0.06);
+      color: var(--text2)
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:1200px) {
+      body {
+        grid-template-columns: 1fr
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 16px 20px
+      }
+
+      .brand {
+        padding: 0;
+        border: none;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px
+      }
+
+      .nav-section,
+      .current-time {
+        display: none
+      }
+
+      .analytics-grid,
+      .workspace-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .hero {
+        flex-direction: column;
+        align-items: flex-start
+      }
+
+      .hero-stat-group {
+        min-width: auto
+      }
+    }
+
+    @media(max-width:768px) {
+      .main {
+        padding: 16px;
+        gap: 16px
+      }
+
+      .sidebar {
+        justify-content: flex-start
+      }
+
+      .hero {
+        flex-direction: column;
+        align-items: flex-start
+      }
+
+      .analytics-grid,
+      .workspace-grid,
+      .report-grid {
+        grid-template-columns: 1fr
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .form-two {
+        grid-template-columns: 1fr
+      }
+
+      .hero-stat-group {
+        display: none
+      }
+
+      .search-bar {
+        font-size: 0.75rem
+      }
+    }
+
+    @media(max-width:480px) {
+
+      .metrics,
+      .report-grid {
+        grid-template-columns: 1fr
+      }
+
+      .hero h1 {
+        font-size: 1.4rem
+      }
+
+      .hero p {
+        font-size: 0.85rem
+      }
+
+      .sidebar {
+        padding: 12px
+      }
+
+      .brand-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 14px
+      }
+
+      .main {
+        padding: 12px;
+        gap: 12px
+      }
+
+      .table-wrap {
+        font-size: 0.75rem
+      }
+
+      th,
+      td {
+        padding: 8px
+      }
+    }
+
+    /* Chart canvas sizing */
+    canvas {
+      display: block;
+      width: 100% !important;
+      height: 260px !important;
+      max-height: 420px;
+      border-radius: 10px
+    }
+
+    .panel canvas,
+    .hero canvas {
+      height: 240px !important;
+      max-height: 360px
+    }
+
+    #overviewChart {
+      height: 200px !important
+    }
+
+    #subjectChart,
+    #studentChart,
+    #attRateChart,
+    #marksSubjectChart {
+      height: 260px !important
+    }
+
+    #attendanceChart {
+      height: 180px !important
+    }
+
+    @media(max-width:1200px) {
+      canvas {
+        height: 220px !important
+      }
+    }
+
+    @media(max-width:768px) {
+      canvas {
+        height: 180px !important
+      }
+    }
+
+    /* Spacing fixes */
+    .panel,
+    .metric-card,
+    .hero-stat,
+    .report-card,
+    .topper-row,
+    .table-wrap,
+    .workspace-grid>*,
+    .analytics-grid>*,
+    .report-grid>* {
+      margin-bottom: 12px;
+    }
+
+    .workspace-grid,
+    .analytics-grid,
+    .report-grid,
+    .metrics {
+      display: grid;
+      gap: 16px
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="brand">
-    <div class="brand-icon">ET</div>
-    <div>
-      <div class="brand-name">EduTrack</div>
-      <div class="brand-sub">Teacher Portal</div>
-    </div>
-  </div>
-  <div class="current-time" id="currentTime"></div>
-  <div class="nav-section">Main</div>
-  <nav id="sidebar-nav">
-    <button class="nav-link active" data-section="overview">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg>
-      Overview
-    </button>
-    <button class="nav-link" data-section="students">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6 5.87a4 4 0 100-8 4 4 0 000 8zm6-12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-      Students
-    </button>
-    <button class="nav-link" data-section="marks">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-      Marks
-    </button>
-    <button class="nav-link" data-section="attendance">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-      Attendance
-    </button>
-    <button class="nav-link" data-section="analytics">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-      Analytics
-    </button>
-    <button class="nav-link" data-section="reports">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-      Reports
-    </button>
-  </nav>
-  <div class="sidebar-footer">
-    <button id="resetDemo">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-      Reset Demo Data
-    </button>
-  </div>
-</aside>
-
-<!-- MAIN -->
-<main class="main">
-
-  <!-- OVERVIEW -->
-  <div id="section-overview">
-    <div class="hero">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">ET</div>
       <div>
-        <div class="hero-eyebrow">
-          <span class="hero-eyebrow-dot"></span>
-          Live Dashboard
+        <div class="brand-name">EduTrack</div>
+        <div class="brand-sub">Teacher Portal</div>
+      </div>
+    </div>
+    <div class="current-time" id="currentTime"></div>
+    <div class="nav-section">Main</div>
+    <nav id="sidebar-nav">
+      <button class="nav-link active" data-section="overview">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9" />
+        </svg>
+        Overview
+      </button>
+      <button class="nav-link" data-section="students">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6 5.87a4 4 0 100-8 4 4 0 000 8zm6-12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        Students
+      </button>
+      <button class="nav-link" data-section="marks">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        Marks
+      </button>
+      <button class="nav-link" data-section="attendance">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        Attendance
+      </button>
+      <button class="nav-link" data-section="analytics">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        Analytics
+      </button>
+      <button class="nav-link" data-section="reports">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        Reports
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <button id="resetDemo">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"
+          width="16" height="16">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Reset Demo Data
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- OVERVIEW -->
+    <div id="section-overview">
+      <div class="hero">
+        <div>
+          <div class="hero-eyebrow">
+            <span class="hero-eyebrow-dot"></span>
+            Live Dashboard
+          </div>
+          <h1>Smart <span>Teaching</span><br>Performance Hub</h1>
+          <p>Track students, record marks, monitor attendance and generate detailed PDF reports — all stored locally, no
+            server needed.</p>
+          <div class="hero-actions">
+            <button class="btn-primary" onclick="navigate('students')">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" width="16" height="16">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Add Student
+            </button>
+            <button class="btn-secondary" onclick="navigate('reports')">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" width="16" height="16">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              View Reports
+            </button>
+          </div>
         </div>
-        <h1>Smart <span>Teaching</span><br>Performance Hub</h1>
-        <p>Track students, record marks, monitor attendance and generate detailed PDF reports — all stored locally, no server needed.</p>
-        <div class="hero-actions">
-          <button class="btn-primary" onclick="navigate('students')">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-            Add Student
+        <div class="hero-stat-group">
+          <div class="hero-stat">
+            <div class="hero-stat-value" id="heroStudentCount">0</div>
+            <div class="hero-stat-label">Students</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value" id="heroMarkCount">0</div>
+            <div class="hero-stat-label">Mark Entries</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value" id="heroAttCount">0</div>
+            <div class="hero-stat-label">Attendance</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value" id="heroAvgScore">—</div>
+            <div class="hero-stat-label">Class Avg</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="metrics">
+        <div class="metric-card">
+          <div class="metric-icon">👥</div>
+          <div class="metric-label">Total Students</div>
+          <div class="metric-value" id="metricStudents">0</div>
+          <div class="metric-sub" id="metricStudentSub">No students yet</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">📝</div>
+          <div class="metric-label">Marks Uploaded</div>
+          <div class="metric-value" id="metricMarks">0</div>
+          <div class="metric-sub" id="metricMarkSub">No marks yet</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">📅</div>
+          <div class="metric-label">Attendance Rate</div>
+          <div class="metric-value" id="metricAttRate">—%</div>
+          <div class="metric-sub" id="metricAttSub">No data</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">⭐</div>
+          <div class="metric-label">Class Topper</div>
+          <div class="metric-value" style="font-size:1.1rem;line-height:1.3" id="metricTopper">No data</div>
+          <div class="metric-sub" id="metricTopperSub">Highest average</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-accent"></div>
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow">Analytics Preview</div>
+            <div class="section-title">Class Performance Overview</div>
+          </div>
+          <button class="btn-secondary" onclick="navigate('analytics')" style="font-size:0.8rem;padding:8px 14px">View
+            Full Analytics →</button>
+        </div>
+        <canvas id="overviewChart" style="height:200px!important"></canvas>
+      </div>
+    </div>
+
+    <!-- STUDENTS SECTION -->
+    <div id="section-students" style="display:none">
+      <div class="workspace-grid">
+        <div class="panel wide">
+          <div class="panel-accent"></div>
+          <div class="section-header">
+            <div>
+              <div class="section-eyebrow">Registry</div>
+              <div class="section-title">Add New Student</div>
+            </div>
+          </div>
+          <form id="studentForm" class="form-grid form-two">
+            <div class="field"><label>Full Name</label><input type="text" name="name" required
+                placeholder="Anaya Sharma"></div>
+            <div class="field"><label>Student Number</label><input type="text" name="studentNumber" required
+                placeholder="STU-001"></div>
+            <div class="field"><label>Email Address</label><input type="email" name="email" required
+                placeholder="student@example.com"></div>
+            <div class="field"><label>Course / Program</label><input type="text" name="course" required
+                placeholder="Computer Science"></div>
+            <div class="field"><label>Year Level</label><input type="text" name="yearLevel" required
+                placeholder="2nd Year"></div>
+            <div class="field"><label>Gender</label><select name="gender" required>
+                <option value="">Select</option>
+                <option value="Female">Female</option>
+                <option value="Male">Male</option>
+                <option value="Other">Other</option>
+              </select></div>
+            <button type="submit" class="form-btn" style="grid-column:span 2">Add Student to Registry</button>
+          </form>
+        </div>
+        <div class="panel">
+          <div class="panel-accent"></div>
+          <div class="section-eyebrow">Quick Stats</div>
+          <div class="section-title" style="margin-bottom:16px">Student Breakdown</div>
+          <div id="genderBreakdown" class="topper-list"></div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:0">
+        <div class="panel-accent"></div>
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow">Class List</div>
+            <div class="section-title">All Students</div>
+          </div>
+          <div class="search-bar">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input type="text" id="studentSearch" placeholder="Search students…">
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Student No.</th>
+                <th>Course</th>
+                <th>Year</th>
+                <th>Avg Score</th>
+                <th>Att. Rate</th>
+                <th>Email</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="studentRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MARKS SECTION -->
+    <div id="section-marks" style="display:none">
+      <div class="workspace-grid">
+        <div class="panel">
+          <div class="panel-accent"></div>
+          <div class="section-header">
+            <div>
+              <div class="section-eyebrow">Assessment</div>
+              <div class="section-title">Upload Marks</div>
+            </div>
+          </div>
+          <form id="markForm" class="form-grid">
+            <div class="field"><label>Student<select name="studentId" id="markStudent" required></select></label></div>
+            <div class="field"><label>Subject<select name="subject" id="markSubject" required></select></label></div>
+            <div class="field"><label>Exam Type<input name="examType" required
+                  placeholder="Midterm / Final / Quiz"></label></div>
+            <div class="field"><label>Score (0–100)<input name="score" required type="number" min="0" max="100"
+                  step="0.01" placeholder="85.5"></label></div>
+            <button type="submit" class="form-btn">Upload Marks</button>
+          </form>
+        </div>
+        <div class="panel wide">
+          <div class="panel-accent"></div>
+          <div class="section-header">
+            <div>
+              <div class="section-eyebrow">Subject Performance</div>
+              <div class="section-title">Marks by Subject</div>
+            </div>
+          </div>
+          <canvas id="marksSubjectChart"></canvas>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:0">
+        <div class="panel-accent"></div>
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow">Recent Results</div>
+            <div class="section-title">Marks Ledger</div>
+          </div>
+          <div class="search-bar">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input type="text" id="markSearch" placeholder="Search marks…">
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Subject</th>
+                <th>Exam Type</th>
+                <th>Score</th>
+                <th>Grade</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="markRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ATTENDANCE SECTION -->
+    <div id="section-attendance" style="display:none">
+      <div class="workspace-grid">
+        <div class="panel">
+          <div class="panel-accent"></div>
+          <div class="section-header">
+            <div>
+              <div class="section-eyebrow">Attendance</div>
+              <div class="section-title">Record Attendance</div>
+            </div>
+          </div>
+          <form id="attendanceForm" class="form-grid">
+            <div class="field"><label>Student<select name="studentId" id="attendanceStudent" required></select></label>
+            </div>
+            <div class="field"><label>Subject<select name="subject" id="attendanceSubject" required></select></label>
+            </div>
+            <div class="field"><label>Date<input name="date" type="date" required></label></div>
+            <div class="field"><label>Status<select name="status" required>
+                  <option value="PRESENT">✓ Present</option>
+                  <option value="ABSENT">✗ Absent</option>
+                  <option value="LATE">~ Late</option>
+                </select></label></div>
+            <button type="submit" class="form-btn">Record Attendance</button>
+          </form>
+        </div>
+        <div class="panel wide">
+          <div class="panel-accent"></div>
+          <div class="section-eyebrow">Summary</div>
+          <div class="section-title" style="margin-bottom:16px">Attendance Overview</div>
+          <div class="att-summary">
+            <div class="att-box att-box-p">
+              <div class="att-box-num" id="attPresCount">0</div>
+              <div class="att-box-label">Present</div>
+            </div>
+            <div class="att-box att-box-a">
+              <div class="att-box-num" id="attAbsCount">0</div>
+              <div class="att-box-label">Absent</div>
+            </div>
+            <div class="att-box att-box-l">
+              <div class="att-box-num" id="attLateCount">0</div>
+              <div class="att-box-label">Late</div>
+            </div>
+          </div>
+          <canvas id="attendanceChart" style="height:160px!important"></canvas>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:0">
+        <div class="panel-accent"></div>
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow">Log</div>
+            <div class="section-title">Attendance Records</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Subject</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="attendanceRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS SECTION -->
+    <div id="section-analytics" style="display:none">
+      <div class="analytics-grid">
+        <div class="panel wide">
+          <div class="panel-accent"></div>
+          <div class="section-eyebrow">Performance</div>
+          <div class="section-title" style="margin-bottom:14px">Subject Average Scores</div>
+          <canvas id="subjectChart"></canvas>
+        </div>
+        <div class="panel">
+          <div class="panel-accent"></div>
+          <div class="section-eyebrow">Rankings</div>
+          <div class="section-title" style="margin-bottom:14px">Subject Toppers</div>
+          <div id="subjectToppers"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-accent"></div>
+          <div class="section-eyebrow">Students</div>
+          <div class="section-title" style="margin-bottom:14px">Average by Student</div>
+          <canvas id="studentChart"></canvas>
+        </div>
+        <div class="panel wide">
+          <div class="panel-accent"></div>
+          <div class="section-eyebrow">Attendance</div>
+          <div class="section-title" style="margin-bottom:14px">Presence Rate by Student</div>
+          <canvas id="attRateChart"></canvas>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:0">
+        <div class="panel-accent"></div>
+        <div class="section-eyebrow">Breakdown</div>
+        <div class="section-title" style="margin-bottom:18px">Grade Distribution</div>
+        <div id="gradeDistribution" style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;"></div>
+      </div>
+      <div class="panel" style="margin-top:0">
+        <div class="panel-accent"></div>
+        <div class="section-eyebrow">Leaderboard</div>
+        <div class="section-title" style="margin-bottom:18px">Student Rankings</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Student</th>
+                <th>Avg Score</th>
+                <th>Grade</th>
+                <th>Att. Rate</th>
+                <th>Performance</th>
+              </tr>
+            </thead>
+            <tbody id="rankingRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTS SECTION -->
+    <div id="section-reports" style="display:none">
+      <div class="panel" style="margin-bottom:0">
+        <div class="panel-accent"></div>
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow">Downloadable PDFs</div>
+            <div class="section-title">Student Report Cards</div>
+          </div>
+          <button class="btn-primary" onclick="downloadAllReports()" id="downloadAllBtn"
+            style="font-size:0.82rem;padding:10px 16px">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+              stroke="currentColor" width="15" height="15">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Download All
           </button>
-          <button class="btn-secondary" onclick="navigate('reports')">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            View Reports
-          </button>
         </div>
       </div>
-      <div class="hero-stat-group">
-        <div class="hero-stat">
-          <div class="hero-stat-value" id="heroStudentCount">0</div>
-          <div class="hero-stat-label">Students</div>
-        </div>
-        <div class="hero-stat">
-          <div class="hero-stat-value" id="heroMarkCount">0</div>
-          <div class="hero-stat-label">Mark Entries</div>
-        </div>
-        <div class="hero-stat">
-          <div class="hero-stat-value" id="heroAttCount">0</div>
-          <div class="hero-stat-label">Attendance</div>
-        </div>
-        <div class="hero-stat">
-          <div class="hero-stat-value" id="heroAvgScore">—</div>
-          <div class="hero-stat-label">Class Avg</div>
-        </div>
-      </div>
+      <div class="report-grid" id="reportCards"></div>
     </div>
 
-    <div class="metrics">
-      <div class="metric-card">
-        <div class="metric-icon">👥</div>
-        <div class="metric-label">Total Students</div>
-        <div class="metric-value" id="metricStudents">0</div>
-        <div class="metric-sub" id="metricStudentSub">No students yet</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-icon">📝</div>
-        <div class="metric-label">Marks Uploaded</div>
-        <div class="metric-value" id="metricMarks">0</div>
-        <div class="metric-sub" id="metricMarkSub">No marks yet</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-icon">📅</div>
-        <div class="metric-label">Attendance Rate</div>
-        <div class="metric-value" id="metricAttRate">—%</div>
-        <div class="metric-sub" id="metricAttSub">No data</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-icon">⭐</div>
-        <div class="metric-label">Class Topper</div>
-        <div class="metric-value" style="font-size:1.1rem;line-height:1.3" id="metricTopper">No data</div>
-        <div class="metric-sub" id="metricTopperSub">Highest average</div>
-      </div>
-    </div>
+  </main>
 
-    <div class="panel">
-      <div class="panel-accent"></div>
-      <div class="section-header">
-        <div>
-          <div class="section-eyebrow">Analytics Preview</div>
-          <div class="section-title">Class Performance Overview</div>
-        </div>
-        <button class="btn-secondary" onclick="navigate('analytics')" style="font-size:0.8rem;padding:8px 14px">View Full Analytics →</button>
-      </div>
-      <canvas id="overviewChart" style="height:200px!important"></canvas>
-    </div>
+  <!-- TOAST -->
+  <div class="toast" id="toast">
+    <span class="toast-dot" id="toastDot"></span>
+    <span id="toastMsg"></span>
   </div>
 
-  <!-- STUDENTS SECTION -->
-  <div id="section-students" style="display:none">
-    <div class="workspace-grid">
-      <div class="panel wide">
-        <div class="panel-accent"></div>
-        <div class="section-header">
-          <div>
-            <div class="section-eyebrow">Registry</div>
-            <div class="section-title">Add New Student</div>
-          </div>
-        </div>
-        <form id="studentForm" class="form-grid form-two">
-          <div class="field"><label>Full Name</label><input type="text" name="name" required placeholder="Anaya Sharma"></div>
-          <div class="field"><label>Student Number</label><input type="text" name="studentNumber" required placeholder="STU-001"></div>
-          <div class="field"><label>Email Address</label><input type="email" name="email" required placeholder="student@example.com"></div>
-          <div class="field"><label>Course / Program</label><input type="text" name="course" required placeholder="Computer Science"></div>
-          <div class="field"><label>Year Level</label><input type="text" name="yearLevel" required placeholder="2nd Year"></div>
-          <div class="field"><label>Gender</label><select name="gender" required><option value="">Select</option><option value="Female">Female</option><option value="Male">Male</option><option value="Other">Other</option></select></div>
-          <button type="submit" class="form-btn" style="grid-column:span 2">Add Student to Registry</button>
-        </form>
-      </div>
-      <div class="panel">
-        <div class="panel-accent"></div>
-        <div class="section-eyebrow">Quick Stats</div>
-        <div class="section-title" style="margin-bottom:16px">Student Breakdown</div>
-        <div id="genderBreakdown" class="topper-list"></div>
-      </div>
-    </div>
+  <script>
+    /* Improved EduTrack App with all features */
+    const KEY = 'eduTrackData_v2';
+    const SUBJECTS = ['Mathematics', 'Physics', 'Chemistry', 'Computer Science', 'English'];
+    let charts = {};
+    const mkId = () => crypto.randomUUID();
 
-    <div class="panel" style="margin-top:0">
-      <div class="panel-accent"></div>
-      <div class="section-header">
-        <div>
-          <div class="section-eyebrow">Class List</div>
-          <div class="section-title">All Students</div>
-        </div>
-        <div class="search-bar">
-          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-          <input type="text" id="studentSearch" placeholder="Search students…">
-        </div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Name</th><th>Student No.</th><th>Course</th><th>Year</th><th>Avg Score</th><th>Att. Rate</th><th>Email</th><th></th></tr></thead>
-          <tbody id="studentRows"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+    function buildDemo() {
+      const s = [
+        { id: mkId(), name: 'Anaya Sharma', studentNumber: 'STU-001', email: 'anaya@example.com', course: 'Computer Science', yearLevel: '2nd Year', gender: 'Female' },
+        { id: mkId(), name: 'Kabir Mehta', studentNumber: 'STU-002', email: 'kabir@example.com', course: 'Computer Science', yearLevel: '2nd Year', gender: 'Male' },
+        { id: mkId(), name: 'Meera Rao', studentNumber: 'STU-003', email: 'meera@example.com', course: 'Computer Science', yearLevel: '3rd Year', gender: 'Female' },
+        { id: mkId(), name: 'Arjun Patel', studentNumber: 'STU-004', email: 'arjun@example.com', course: 'Physics', yearLevel: '1st Year', gender: 'Male' },
+        { id: mkId(), name: 'Priya Singh', studentNumber: 'STU-005', email: 'priya@example.com', course: 'Mathematics', yearLevel: '2nd Year', gender: 'Female' },
+      ];
+      const m = [];
+      const scores = {
+        [s[0].id]: { Mathematics: 94, Physics: 88, 'Computer Science': 96, Chemistry: 79, English: 85 },
+        [s[1].id]: { Mathematics: 82, Physics: 91, 'Computer Science': 86, Chemistry: 88, English: 74 },
+        [s[2].id]: { Mathematics: 89, Physics: 84, 'Computer Science': 92, Chemistry: 91, English: 88 },
+        [s[3].id]: { Mathematics: 76, Physics: 93, 'Computer Science': 70, Chemistry: 85, English: 72 },
+        [s[4].id]: { Mathematics: 97, Physics: 78, 'Computer Science': 81, Chemistry: 83, English: 90 },
+      };
+      const exams = ['Midterm', 'Final', 'Quiz'];
+      s.forEach(st => {
+        SUBJECTS.forEach((sub, i) => {
+          m.push({ id: mkId(), studentId: st.id, subject: sub, examType: exams[i % 3], score: scores[st.id][sub] });
+        });
+      });
+      const attData = ['PRESENT', 'PRESENT', 'LATE', 'PRESENT', 'ABSENT', 'PRESENT', 'PRESENT', 'LATE'];
+      const a = [];
+      const dates = ['2025-03-10', '2025-03-11', '2025-03-12', '2025-03-13', '2025-03-14'];
+      s.forEach((st, si) => {
+        SUBJECTS.slice(0, 3).forEach((sub, subj) => {
+          a.push({ id: mkId(), studentId: st.id, subject: sub, date: dates[(si + subj) % 5], status: attData[(si * 3 + subj) % 8] });
+        });
+      });
+      return { students: s, marks: m, attendance: a };
+    }
 
-  <!-- MARKS SECTION -->
-  <div id="section-marks" style="display:none">
-    <div class="workspace-grid">
-      <div class="panel">
-        <div class="panel-accent"></div>
-        <div class="section-header">
-          <div>
-            <div class="section-eyebrow">Assessment</div>
-            <div class="section-title">Upload Marks</div>
-          </div>
-        </div>
-        <form id="markForm" class="form-grid">
-          <div class="field"><label>Student<select name="studentId" id="markStudent" required></select></label></div>
-          <div class="field"><label>Subject<select name="subject" id="markSubject" required></select></label></div>
-          <div class="field"><label>Exam Type<input name="examType" required placeholder="Midterm / Final / Quiz"></label></div>
-          <div class="field"><label>Score (0–100)<input name="score" required type="number" min="0" max="100" step="0.01" placeholder="85.5"></label></div>
-          <button type="submit" class="form-btn">Upload Marks</button>
-        </form>
-      </div>
-      <div class="panel wide">
-        <div class="panel-accent"></div>
-        <div class="section-header">
-          <div>
-            <div class="section-eyebrow">Subject Performance</div>
-            <div class="section-title">Marks by Subject</div>
-          </div>
-        </div>
-        <canvas id="marksSubjectChart"></canvas>
-      </div>
-    </div>
-    <div class="panel" style="margin-top:0">
-      <div class="panel-accent"></div>
-      <div class="section-header">
-        <div>
-          <div class="section-eyebrow">Recent Results</div>
-          <div class="section-title">Marks Ledger</div>
-        </div>
-        <div class="search-bar">
-          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-          <input type="text" id="markSearch" placeholder="Search marks…">
-        </div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Student</th><th>Subject</th><th>Exam Type</th><th>Score</th><th>Grade</th><th></th></tr></thead>
-          <tbody id="markRows"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+    function load() { const raw = localStorage.getItem(KEY); if (!raw) { const d = buildDemo(); save(d); return d; } return JSON.parse(raw); }
+    function save(data) { localStorage.setItem(KEY, JSON.stringify(data)); }
+    function avg(arr) { if (!arr.length) return 0; return Math.round(arr.reduce((s, v) => s + Number(v), 0) / arr.length * 10) / 10; }
+    function gradeFor(score) { if (score >= 90) return 'A+'; if (score >= 80) return 'A'; if (score >= 70) return 'B'; if (score >= 60) return 'C'; if (score >= 50) return 'D'; return 'NS'; }
+    function gradeClass(g) { return { 'A+': 'score-a-plus', 'A': 'score-a', 'B': 'score-b', 'C': 'score-c', 'D': 'score-d', 'NS': 'score-f' }[g] || 'score-f'; }
+    function gradeReportClass(g) { return { 'A+': 'grade-A-plus', 'A': 'grade-A', 'B': 'grade-B', 'C': 'grade-C', 'D': 'grade-D', 'NS': 'grade-NS' }[g] || 'grade-NS'; }
+    function studentAvg(data, sid) { const ms = data.marks.filter(m => m.studentId === sid).map(m => m.score); return avg(ms); }
+    function attRate(data, sid) { const rows = data.attendance.filter(a => a.studentId === sid); if (!rows.length) return 0; const p = rows.filter(r => r.status === 'PRESENT').length; return Math.round(p * 100 / rows.length); }
+    function subjectAvgs(data) { return SUBJECTS.reduce((r, s) => { const sc = data.marks.filter(m => m.subject === s).map(m => m.score); r[s] = sc.length ? avg(sc) : 0; return r; }, {}); }
+    function studentName(data, sid) { return data.students.find(s => s.id === sid)?.name || 'Deleted'; }
 
-  <!-- ATTENDANCE SECTION -->
-  <div id="section-attendance" style="display:none">
-    <div class="workspace-grid">
-      <div class="panel">
-        <div class="panel-accent"></div>
-        <div class="section-header">
-          <div>
-            <div class="section-eyebrow">Attendance</div>
-            <div class="section-title">Record Attendance</div>
-          </div>
-        </div>
-        <form id="attendanceForm" class="form-grid">
-          <div class="field"><label>Student<select name="studentId" id="attendanceStudent" required></select></label></div>
-          <div class="field"><label>Subject<select name="subject" id="attendanceSubject" required></select></label></div>
-          <div class="field"><label>Date<input name="date" type="date" required></label></div>
-          <div class="field"><label>Status<select name="status" required>
-            <option value="PRESENT">✓ Present</option>
-            <option value="ABSENT">✗ Absent</option>
-            <option value="LATE">~ Late</option>
-          </select></label></div>
-          <button type="submit" class="form-btn">Record Attendance</button>
-        </form>
-      </div>
-      <div class="panel wide">
-        <div class="panel-accent"></div>
-        <div class="section-eyebrow">Summary</div>
-        <div class="section-title" style="margin-bottom:16px">Attendance Overview</div>
-        <div class="att-summary">
-          <div class="att-box att-box-p"><div class="att-box-num" id="attPresCount">0</div><div class="att-box-label">Present</div></div>
-          <div class="att-box att-box-a"><div class="att-box-num" id="attAbsCount">0</div><div class="att-box-label">Absent</div></div>
-          <div class="att-box att-box-l"><div class="att-box-num" id="attLateCount">0</div><div class="att-box-label">Late</div></div>
-        </div>
-        <canvas id="attendanceChart" style="height:160px!important"></canvas>
-      </div>
-    </div>
-    <div class="panel" style="margin-top:0">
-      <div class="panel-accent"></div>
-      <div class="section-header">
-        <div>
-          <div class="section-eyebrow">Log</div>
-          <div class="section-title">Attendance Records</div>
-        </div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Student</th><th>Subject</th><th>Date</th><th>Status</th><th></th></tr></thead>
-          <tbody id="attendanceRows"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+    function renderSelects(data) {
+      const opts = ['<option value="">— Select student —</option>', ...data.students.map(s => `<option value="${s.id}">${s.name} (${s.studentNumber})</option>`)].join('');
+      ['markStudent', 'attendanceStudent'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = opts; });
+      const subOpts = ['<option value="">— Select subject —</option>', ...SUBJECTS.map(s => `<option value="${s}">${s}</option>`)].join('');
+      ['markSubject', 'attendanceSubject'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = subOpts; });
+    }
 
-  <!-- ANALYTICS SECTION -->
-  <div id="section-analytics" style="display:none">
-    <div class="analytics-grid">
-      <div class="panel wide">
-        <div class="panel-accent"></div>
-        <div class="section-eyebrow">Performance</div>
-        <div class="section-title" style="margin-bottom:14px">Subject Average Scores</div>
-        <canvas id="subjectChart"></canvas>
-      </div>
-      <div class="panel">
-        <div class="panel-accent"></div>
-        <div class="section-eyebrow">Rankings</div>
-        <div class="section-title" style="margin-bottom:14px">Subject Toppers</div>
-        <div id="subjectToppers"></div>
-      </div>
-      <div class="panel">
-        <div class="panel-accent"></div>
-        <div class="section-eyebrow">Students</div>
-        <div class="section-title" style="margin-bottom:14px">Average by Student</div>
-        <canvas id="studentChart"></canvas>
-      </div>
-      <div class="panel wide">
-        <div class="panel-accent"></div>
-        <div class="section-eyebrow">Attendance</div>
-        <div class="section-title" style="margin-bottom:14px">Presence Rate by Student</div>
-        <canvas id="attRateChart"></canvas>
-      </div>
-    </div>
-    <div class="panel" style="margin-top:0">
-      <div class="panel-accent"></div>
-      <div class="section-eyebrow">Breakdown</div>
-      <div class="section-title" style="margin-bottom:18px">Grade Distribution</div>
-      <div id="gradeDistribution" style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;"></div>
-    </div>
-    <div class="panel" style="margin-top:0">
-      <div class="panel-accent"></div>
-      <div class="section-eyebrow">Leaderboard</div>
-      <div class="section-title" style="margin-bottom:18px">Student Rankings</div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Rank</th><th>Student</th><th>Avg Score</th><th>Grade</th><th>Att. Rate</th><th>Performance</th></tr></thead>
-          <tbody id="rankingRows"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+    function renderMetrics(data) {
+      const avgs = data.students.map(s => studentAvg(data, s.id)).filter(v => v > 0);
+      const classAvg = avgs.length ? avg(avgs) : null;
+      const topper = data.students.map(s => ({ s, a: studentAvg(data, s.id) })).filter(x => x.a > 0).sort((a, b) => b.a - a.a)[0];
+      const allAtt = data.attendance.filter(a => a.status === 'PRESENT').length;
+      const attPct = data.attendance.length ? Math.round(allAtt * 100 / data.attendance.length) : null;
+      setText('heroStudentCount', data.students.length);
+      setText('heroMarkCount', data.marks.length);
+      setText('heroAttCount', data.attendance.length);
+      setText('heroAvgScore', classAvg !== null ? classAvg : '—');
+      setText('metricStudents', data.students.length);
+      setText('metricStudentSub', data.students.length === 1 ? '1 student enrolled' : `${data.students.length} students enrolled`);
+      setText('metricMarks', data.marks.length);
+      setText('metricMarkSub', data.marks.length === 0 ? 'No marks uploaded' : data.marks.length + ' entries across subjects');
+      setText('metricAttRate', attPct !== null ? attPct + '%' : '—%');
+      setText('metricAttSub', attPct !== null ? `${allAtt} of ${data.attendance.length} sessions` : 'No records yet');
+      setText('metricTopper', topper ? topper.s.name.split(' ')[0] : 'No data');
+      setText('metricTopperSub', topper ? `Avg: ${topper.a} (${topper.s.studentNumber})` : 'No marks recorded');
+      setText('attPresCount', data.attendance.filter(a => a.status === 'PRESENT').length);
+      setText('attAbsCount', data.attendance.filter(a => a.status === 'ABSENT').length);
+      setText('attLateCount', data.attendance.filter(a => a.status === 'LATE').length);
+    }
 
-  <!-- REPORTS SECTION -->
-  <div id="section-reports" style="display:none">
-    <div class="panel" style="margin-bottom:0">
-      <div class="panel-accent"></div>
-      <div class="section-header">
-        <div>
-          <div class="section-eyebrow">Downloadable PDFs</div>
-          <div class="section-title">Student Report Cards</div>
-        </div>
-        <button class="btn-primary" onclick="downloadAllReports()" id="downloadAllBtn" style="font-size:0.82rem;padding:10px 16px">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          Download All
-        </button>
-      </div>
-    </div>
-    <div class="report-grid" id="reportCards"></div>
-  </div>
+    function setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
 
-</main>
+    function renderStudentTable(data, filter = '') {
+      const tbody = document.getElementById('studentRows');
+      if (!tbody) return;
+      let students = data.students;
+      if (filter) students = students.filter(s => s.name.toLowerCase().includes(filter) || s.studentNumber.toLowerCase().includes(filter) || s.course.toLowerCase().includes(filter));
+      tbody.innerHTML = students.length ? students.map(s => {
+        const a = studentAvg(data, s.id);
+        const ar = attRate(data, s.id);
+        const g = gradeFor(a);
+        return `<tr><td class="td-name">${s.name}</td><td>${s.studentNumber}</td><td>${s.course}</td><td>${s.yearLevel}</td><td class="td-score">${a > 0 ? `<span class="score-pill">${a}</span>` : '—'}</td><td>${ar > 0 ? `<span class="score-pill">${ar}%</span>` : '—'}</td><td style="color:var(--text3);font-size:0.8rem">${s.email}</td><td><button class="btn-danger" data-del-student="${s.id}">Remove</button></td></tr>`;
+      }).join('') : '<tr><td colspan="8" class="empty-state">No students found.</td></tr>';
+    }
 
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <span class="toast-dot" id="toastDot"></span>
-  <span id="toastMsg"></span>
-</div>
+    function renderMarkTable(data, filter = '') {
+      const tbody = document.getElementById('markRows');
+      if (!tbody) return;
+      let marks = [...data.marks].reverse();
+      if (filter) marks = marks.filter(m => studentName(data, m.studentId).toLowerCase().includes(filter) || m.subject.toLowerCase().includes(filter) || m.examType.toLowerCase().includes(filter));
+      tbody.innerHTML = marks.length ? marks.map(m => {
+        const g = gradeFor(m.score);
+        return `<tr><td class="td-name">${studentName(data, m.studentId)}</td><td>${m.subject}</td><td>${m.examType}</td><td class="td-score">${m.score}</td><td><span class="score-pill">${g}</span></td><td><button class="btn-danger" data-del-mark="${m.id}">Remove</button></td></tr>`;
+      }).join('') : '<tr><td colspan="6" class="empty-state">No marks uploaded yet.</td></tr>';
+    }
 
-<script>
-/* Improved EduTrack App with all features */
-const KEY = 'eduTrackData_v2';
-const SUBJECTS = ['Mathematics','Physics','Chemistry','Computer Science','English'];
-let charts = {};
-const mkId = () => crypto.randomUUID();
+    function renderAttTable(data) {
+      const tbody = document.getElementById('attendanceRows');
+      if (!tbody) return;
+      const rows = [...data.attendance].reverse();
+      tbody.innerHTML = rows.length ? rows.map(r => {
+        const cls = { PRESENT: 'att-present', ABSENT: 'att-absent', LATE: 'att-late' }[r.status] || 'att-late';
+        return `<tr><td class="td-name">${studentName(data, r.studentId)}</td><td>${r.subject}</td><td>${r.date}</td><td><span class="${cls}">${r.status}</span></td><td><button class="btn-danger" data-del-att="${r.id}">Remove</button></td></tr>`;
+      }).join('') : '<tr><td colspan="5" class="empty-state">No attendance recorded yet.</td></tr>';
+    }
 
-function buildDemo() {
-  const s = [
-    {id:mkId(),name:'Anaya Sharma',studentNumber:'STU-001',email:'anaya@example.com',course:'Computer Science',yearLevel:'2nd Year',gender:'Female'},
-    {id:mkId(),name:'Kabir Mehta',studentNumber:'STU-002',email:'kabir@example.com',course:'Computer Science',yearLevel:'2nd Year',gender:'Male'},
-    {id:mkId(),name:'Meera Rao',studentNumber:'STU-003',email:'meera@example.com',course:'Computer Science',yearLevel:'3rd Year',gender:'Female'},
-    {id:mkId(),name:'Arjun Patel',studentNumber:'STU-004',email:'arjun@example.com',course:'Physics',yearLevel:'1st Year',gender:'Male'},
-    {id:mkId(),name:'Priya Singh',studentNumber:'STU-005',email:'priya@example.com',course:'Mathematics',yearLevel:'2nd Year',gender:'Female'},
-  ];
-  const m = [];
-  const scores = {
-    [s[0].id]:{Mathematics:94,Physics:88,'Computer Science':96,Chemistry:79,English:85},
-    [s[1].id]:{Mathematics:82,Physics:91,'Computer Science':86,Chemistry:88,English:74},
-    [s[2].id]:{Mathematics:89,Physics:84,'Computer Science':92,Chemistry:91,English:88},
-    [s[3].id]:{Mathematics:76,Physics:93,'Computer Science':70,Chemistry:85,English:72},
-    [s[4].id]:{Mathematics:97,Physics:78,'Computer Science':81,Chemistry:83,English:90},
-  };
-  const exams = ['Midterm','Final','Quiz'];
-  s.forEach(st => {
-    SUBJECTS.forEach((sub,i) => {
-      m.push({id:mkId(),studentId:st.id,subject:sub,examType:exams[i%3],score:scores[st.id][sub]});
+    function renderStudentBreakdown(data) {
+      const gEl = document.getElementById('genderBreakdown');
+      if (!gEl) return;
+      const genders = {};
+      data.students.forEach(s => { if (s.gender) genders[s.gender] = (genders[s.gender] || 0) + 1; });
+      const total = data.students.length || 1;
+      gEl.innerHTML = Object.entries(genders).map(([g, c]) => ` <div class="topper-row"><span class="topper-subject">${g}</span><span class="topper-name">${c} <span style="color:var(--text3)">/ ${Math.round(c * 100 / total)}%</span></span></div>`).join('') || '<div class="empty-state">No students yet</div>';
+    }
+
+    function renderToppers(data) {
+      const el = document.getElementById('subjectToppers');
+      if (!el) return;
+      el.innerHTML = SUBJECTS.map(sub => {
+        const best = data.marks.filter(m => m.subject === sub).sort((a, b) => b.score - a.score)[0];
+        return `<div class="topper-row"><span class="topper-subject">${sub}</span><span class="topper-name">${best ? studentName(data, best.studentId).split(' ')[0] : '—'}<span class="topper-score">${best ? best.score : '—'}</span></span></div>`;
+      }).join('');
+    }
+
+    function renderGradeDistribution(data) {
+      const el = document.getElementById('gradeDistribution');
+      if (!el) return;
+      const grades = { 'A+': 0, 'A': 0, 'B': 0, 'C': 0, 'D': 0, 'NS': 0 };
+      data.marks.forEach(m => { const g = gradeFor(m.score); grades[g] = (grades[g] || 0) + 1; });
+      const total = data.marks.length || 1;
+      const colors = { 'A+': 'var(--green)', 'A': 'var(--accent2)', 'B': 'var(--violet)', 'C': 'var(--amber)', 'D': 'var(--rose)', 'NS': '#ff4060' };
+      el.innerHTML = Object.entries(grades).map(([g, c]) => ` <div style="background:rgba(10,15,30,0.6);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center"><div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:${colors[g]}">${c}</div><div style="font-size:0.72rem;color:var(--text3);font-weight:700;margin-top:4px">${g}</div><div style="font-size:0.68rem;color:var(--text3);margin-top:2px">${Math.round(c * 100 / total)}%</div></div>`).join('');
+    }
+
+    function renderRankings(data) {
+      const tbody = document.getElementById('rankingRows');
+      if (!tbody) return;
+      const ranked = data.students.map(s => ({ s, a: studentAvg(data, s.id), ar: attRate(data, s.id) })).sort((a, b) => b.a - a.a);
+      const medals = ['🥇', '🥈', '🥉'];
+      tbody.innerHTML = ranked.map((r, i) => {
+        const g = gradeFor(r.a);
+        const pct = r.a;
+        return `<tr><td style="font-size:1.1rem">${medals[i] || `#${i + 1}`}</td><td class="td-name">${r.s.name}</td><td class="td-score">${r.a > 0 ? r.a : '—'}</td><td>${r.a > 0 ? `<span class="score-pill">${g}</span>` : '—'}</td><td>${r.ar > 0 ? `${r.ar}%` : '—'}</td><td style="min-width:120px"><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;background:linear-gradient(90deg,var(--accent),var(--teal))"></div></div></td></tr>`;
+      }).join('') || '<tr><td colspan="6" class="empty-state">No data</td></tr>';
+    }
+
+    Chart.defaults.color = '#96a8c8';
+    Chart.defaults.borderColor = 'rgba(91,140,255,0.1)';
+    Chart.defaults.font.family = 'DM Sans';
+
+    function mkChart(id, type, labels, values, colors, yMax) {
+      const canvas = document.getElementById(id);
+      if (!canvas) return;
+      if (charts[id]) charts[id].destroy();
+      const isMulti = Array.isArray(colors);
+      charts[id] = new Chart(canvas, {
+        type,
+        data: {
+          labels,
+          datasets: [{
+            data: values,
+            backgroundColor: isMulti ? colors : (type === 'line' ? 'rgba(91,140,255,0.1)' : colors),
+            borderColor: isMulti ? colors.map(c => c) : (type === 'line' ? '#5b8cff' : colors),
+            borderWidth: type === 'line' ? 2.5 : 0,
+            borderRadius: type === 'bar' ? 8 : 0,
+            tension: 0.4,
+            fill: type === 'line',
+            pointBackgroundColor: '#5b8cff',
+            pointRadius: 4,
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: yMax || undefined, grid: { color: 'rgba(91,140,255,0.06)' }, ticks: { color: '#5a6e8e' } }, x: { grid: { display: false }, ticks: { color: '#5a6e8e' } } }, plugins: { legend: { display: false } } }
+      });
+    }
+
+    function renderCharts(data) {
+      const subAvgs = subjectAvgs(data);
+      mkChart('subjectChart', 'bar', Object.keys(subAvgs), Object.values(subAvgs), ['rgba(91,140,255,0.8)', 'rgba(0,212,170,0.8)', 'rgba(245,166,35,0.8)', 'rgba(167,139,250,0.8)', 'rgba(255,94,126,0.8)'], 100);
+      const stAvgs = data.students.map(s => ({ n: s.name.split(' ')[0], a: studentAvg(data, s.id) })).sort((a, b) => b.a - a.a);
+      mkChart('studentChart', 'line', stAvgs.map(x => x.n), stAvgs.map(x => x.a), '#5b8cff', 100);
+      const attR = data.students.map(s => ({ n: s.name.split(' ')[0], r: attRate(data, s.id) }));
+      mkChart('attRateChart', 'bar', attR.map(x => x.n), attR.map(x => x.r), attR.map(x => x.r >= 80 ? 'rgba(0,212,170,0.8)' : x.r >= 60 ? 'rgba(245,166,35,0.8)' : 'rgba(255,94,126,0.8)'), 100);
+      mkChart('marksSubjectChart', 'bar', Object.keys(subAvgs), Object.values(subAvgs), 'rgba(91,140,255,0.75)', 100);
+      const labels = data.students.map(s => s.name.split(' ')[0]);
+      const values = data.students.map(s => studentAvg(data, s.id));
+      mkChart('overviewChart', 'line', labels, values, '#5b8cff', 100);
+      const pCount = data.attendance.filter(a => a.status === 'PRESENT').length;
+      const aCount = data.attendance.filter(a => a.status === 'ABSENT').length;
+      const lCount = data.attendance.filter(a => a.status === 'LATE').length;
+      const attCanvas = document.getElementById('attendanceChart');
+      if (attCanvas) {
+        if (charts['attendanceChart']) charts['attendanceChart'].destroy();
+        charts['attendanceChart'] = new Chart(attCanvas, { type: 'doughnut', data: { labels: ['Present', 'Absent', 'Late'], datasets: [{ data: [pCount, aCount, lCount], backgroundColor: ['rgba(0,212,170,0.85)', 'rgba(255,94,126,0.85)', 'rgba(245,166,35,0.85)'], borderWidth: 0, borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#96a8c8', padding: 12, font: { size: 12 } } } } } });
+      }
+    }
+
+    function renderReports(data) {
+      const el = document.getElementById('reportCards');
+      if (!el) return;
+      el.innerHTML = data.students.length ? data.students.map(s => {
+        const marks = data.marks.filter(m => m.studentId === s.id);
+        const a = studentAvg(data, s.id);
+        const ar = attRate(data, s.id);
+        const g = gradeFor(a);
+        const gc = gradeReportClass(g);
+        const mRows = marks.length ? marks.map(m => ` <tr><td>${m.subject}</td><td>${m.examType}</td><td>${m.score}</td></tr>`).join('') : '<tr><td colspan="3" style="color:var(--text3);text-align:center">No marks</td></tr>';
+        return `<div class="report-card"><div class="report-head"><div><div class="report-student-id">${s.studentNumber} · ${s.course}</div><div class="report-student-name">${s.name}</div><div style="font-size:0.75rem;color:var(--text3);margin-top:4px">${s.yearLevel} · ${s.gender || '—'}</div></div><div class="report-grade-badge ${gc}">${g}</div></div><div class="report-stats"><div class="report-stat"><div class="report-stat-label">Avg Score</div><div class="report-stat-value">${a > 0 ? a : '—'}</div></div><div class="report-stat"><div class="report-stat-label">Attendance</div><div class="report-stat-value">${ar > 0 ? ar + '%' : '—'}</div></div></div><table class="report-table"><thead><tr><th>Subject</th><th>Type</th><th>Score</th></tr></thead><tbody>${mRows}</tbody></table><button class="btn-download" data-dl-report="${s.id}"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Download PDF</button></div>`;
+      }).join('') : '<p class="empty-state">Add students to generate report cards.</p>';
+    }
+
+    function downloadReport(data, sid) {
+      const s = data.students.find(st => st.id === sid);
+      if (!s) return;
+      const marks = data.marks.filter(m => m.studentId === sid);
+      const a = studentAvg(data, sid);
+      const ar = attRate(data, sid);
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFillColor(10, 15, 30);
+      doc.rect(0, 0, 210, 45, 'F');
+      doc.setFontSize(22);
+      doc.setTextColor(91, 140, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.text('EduTrack', 14, 20);
+      doc.setFontSize(11);
+      doc.setTextColor(150, 168, 200);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Student Report Card', 14, 30);
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(10);
+      doc.text(`Generated: ${new Date().toLocaleDateString()}`, 130, 30, { align: 'right' });
+      doc.setTextColor(30, 40, 60);
+      doc.setFillColor(245, 247, 251);
+      doc.rect(0, 45, 210, 40, 'F');
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(10, 15, 30);
+      doc.text(s.name, 14, 62);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(90, 110, 140);
+      doc.text(`${s.studentNumber} | ${s.course} | ${s.yearLevel}`, 14, 71);
+      doc.text(`Email: ${s.email}`, 14, 79);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(91, 140, 255);
+      doc.text(`Grade: ${gradeFor(a)}`, 170, 62, { align: 'right' });
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(30, 40, 60);
+      doc.text(`Average: ${a}`, 170, 71, { align: 'right' });
+      doc.text(`Attendance: ${ar}%`, 170, 79, { align: 'right' });
+      doc.autoTable({ head: [['Subject', 'Exam Type', 'Score', 'Grade']], body: marks.length ? marks.map(m => [m.subject, m.examType, String(m.score), gradeFor(m.score)]) : [['No marks available', '', '', '']], startY: 95, headStyles: { fillColor: [91, 140, 255], textColor: [255, 255, 255], fontStyle: 'bold' }, alternateRowStyles: { fillColor: [245, 247, 251] }, styles: { fontSize: 10, cellPadding: 6 }, });
+      doc.save(`${s.studentNumber}-${s.name.replace(/\s+/g, '-')}-report.pdf`);
+      showToast(`Downloaded report for ${s.name}`, 'teal');
+    }
+
+    function downloadAllReports() {
+      const data = load();
+      if (!data.students.length) { showToast('No students to download', 'rose'); return; }
+      data.students.forEach((s, i) => setTimeout(() => downloadReport(data, s.id), i * 400));
+    }
+
+    let toastTimer;
+    function showToast(msg, type = 'accent') {
+      const t = document.getElementById('toast');
+      const d = document.getElementById('toastDot');
+      const m = document.getElementById('toastMsg');
+      const colors = { teal: 'var(--teal)', accent: 'var(--accent2)', rose: 'var(--rose)', amber: 'var(--amber)' };
+      d.style.background = colors[type] || colors.accent;
+      m.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    const sections = ['overview', 'students', 'marks', 'attendance', 'analytics', 'reports'];
+    function navigate(name) {
+      sections.forEach(s => { const el = document.getElementById('section-' + s); if (el) el.style.display = s === name ? '' : 'none'; });
+      document.querySelectorAll('.nav-link').forEach(l => { l.classList.toggle('active', l.dataset.section === name); });
+      if (name === 'analytics') { renderCharts(load()); renderToppers(load()); renderGradeDistribution(load()); renderRankings(load()); }
+      if (name === 'attendance') { renderAttTable(load()); }
+      if (name === 'marks') { renderMarkTable(load()); renderCharts(load()); }
+      if (name === 'students') { renderStudentTable(load()); renderStudentBreakdown(load()); }
+      if (name === 'reports') renderReports(load());
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateClock() { const el = document.getElementById('currentTime'); if (el) el.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function render() {
+      const data = load();
+      renderSelects(data);
+      renderMetrics(data);
+      renderStudentTable(data);
+      renderMarkTable(data);
+      renderStudentBreakdown(data);
+      renderCharts(data);
+    }
+
+    document.getElementById('studentForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const data = load();
+      const f = new FormData(e.currentTarget);
+      data.students.push({ id: mkId(), name: f.get('name').trim(), studentNumber: f.get('studentNumber').trim(), email: f.get('email').trim(), course: f.get('course').trim(), yearLevel: f.get('yearLevel').trim(), gender: f.get('gender') });
+      save(data);
+      e.currentTarget.reset();
+      render();
+      showToast(`${f.get('name').trim()} added successfully`, 'teal');
     });
-  });
-  const attData = ['PRESENT','PRESENT','LATE','PRESENT','ABSENT','PRESENT','PRESENT','LATE'];
-  const a = [];
-  const dates = ['2025-03-10','2025-03-11','2025-03-12','2025-03-13','2025-03-14'];
-  s.forEach((st,si) => {
-    SUBJECTS.slice(0,3).forEach((sub,subj) => {
-      a.push({id:mkId(),studentId:st.id,subject:sub,date:dates[(si+subj)%5],status:attData[(si*3+subj)%8]});
+
+    document.getElementById('markForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const data = load();
+      const f = new FormData(e.currentTarget);
+      const sid = f.get('studentId');
+      if (!sid) return;
+      data.marks.push({ id: mkId(), studentId: sid, subject: f.get('subject'), examType: f.get('examType').trim(), score: Number(f.get('score')) });
+      save(data);
+      e.currentTarget.reset();
+      renderSelects(data);
+      render();
+      showToast('Marks uploaded successfully', 'accent');
     });
-  });
-  return {students:s,marks:m,attendance:a};
-}
 
-function load() {const raw = localStorage.getItem(KEY); if (!raw) { const d = buildDemo(); save(d); return d; } return JSON.parse(raw);} 
-function save(data) { localStorage.setItem(KEY, JSON.stringify(data)); }
-function avg(arr) { if (!arr.length) return 0; return Math.round(arr.reduce((s,v)=>s+Number(v),0)/arr.length * 10)/10; }
-function gradeFor(score) { if (score >= 90) return 'A+'; if (score >= 80) return 'A'; if (score >= 70) return 'B'; if (score >= 60) return 'C'; if (score >= 50) return 'D'; return 'NS'; }
-function gradeClass(g) { return {'A+':'score-a-plus','A':'score-a','B':'score-b','C':'score-c','D':'score-d','NS':'score-f'}[g]||'score-f'; }
-function gradeReportClass(g) { return {'A+':'grade-A-plus','A':'grade-A','B':'grade-B','C':'grade-C','D':'grade-D','NS':'grade-NS'}[g]||'grade-NS'; }
-function studentAvg(data, sid) { const ms = data.marks.filter(m=>m.studentId===sid).map(m=>m.score); return avg(ms); }
-function attRate(data, sid) { const rows = data.attendance.filter(a=>a.studentId===sid); if (!rows.length) return 0; const p = rows.filter(r=>r.status==='PRESENT').length; return Math.round(p*100/rows.length); }
-function subjectAvgs(data) { return SUBJECTS.reduce((r,s)=>{ const sc = data.marks.filter(m=>m.subject===s).map(m=>m.score); r[s]=sc.length?avg(sc):0;return r; },{}); }
-function studentName(data, sid) { return data.students.find(s=>s.id===sid)?.name||'Deleted'; }
+    document.getElementById('attendanceForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const data = load();
+      const f = new FormData(e.currentTarget);
+      const sid = f.get('studentId');
+      if (!sid) return;
+      data.attendance.push({ id: mkId(), studentId: sid, subject: f.get('subject'), date: f.get('date'), status: f.get('status') });
+      save(data);
+      e.currentTarget.reset();
+      renderSelects(data);
+      render();
+      showToast('Attendance recorded', 'amber');
+    });
 
-function renderSelects(data) { 
-  const opts = ['<option value="">— Select student —</option>', ...data.students.map(s=>`<option value="${s.id}">${s.name} (${s.studentNumber})</option>`) ].join(''); 
-  ['markStudent','attendanceStudent'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=opts; }); 
-  const subOpts = ['<option value="">— Select subject —</option>', ...SUBJECTS.map(s=>`<option value="${s}">${s}</option>`) ].join(''); 
-  ['markSubject','attendanceSubject'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=subOpts; }); 
-}
+    document.body.addEventListener('click', e => {
+      const data = load();
+      if (e.target.dataset.delStudent) {
+        const s = data.students.find(x => x.id === e.target.dataset.delStudent);
+        data.students = data.students.filter(x => x.id !== e.target.dataset.delStudent);
+        data.marks = data.marks.filter(m => m.studentId !== e.target.dataset.delStudent);
+        data.attendance = data.attendance.filter(a => a.studentId !== e.target.dataset.delStudent);
+        save(data);
+        render();
+        renderStudentTable(data);
+        showToast(`Removed ${s?.name || 'student'}`, 'rose');
+      }
+      if (e.target.dataset.delMark) {
+        data.marks = data.marks.filter(m => m.id !== e.target.dataset.delMark);
+        save(data);
+        render();
+        renderMarkTable(data);
+        showToast('Mark entry removed', 'rose');
+      }
+      if (e.target.dataset.delAtt) {
+        data.attendance = data.attendance.filter(a => a.id !== e.target.dataset.delAtt);
+        save(data);
+        render();
+        renderAttTable(data);
+        showToast('Attendance record removed', 'rose');
+      }
+      if (e.target.dataset.dlReport) {
+        downloadReport(data, e.target.dataset.dlReport);
+      }
+      if (e.target.closest('[data-section]')) {
+        navigate(e.target.closest('[data-section]').dataset.section);
+      }
+    });
 
-function renderMetrics(data) { 
-  const avgs = data.students.map(s=>studentAvg(data,s.id)).filter(v=>v>0); 
-  const classAvg = avgs.length ? avg(avgs) : null; 
-  const topper = data.students.map(s=>({s,a:studentAvg(data,s.id)})).filter(x=>x.a>0).sort((a,b)=>b.a-a.a)[0]; 
-  const allAtt = data.attendance.filter(a=>a.status==='PRESENT').length; 
-  const attPct = data.attendance.length ? Math.round(allAtt*100/data.attendance.length) : null; 
-  setText('heroStudentCount', data.students.length); 
-  setText('heroMarkCount', data.marks.length); 
-  setText('heroAttCount', data.attendance.length); 
-  setText('heroAvgScore', classAvg!==null ? classAvg : '—'); 
-  setText('metricStudents', data.students.length); 
-  setText('metricStudentSub', data.students.length===1?'1 student enrolled':`${data.students.length} students enrolled`); 
-  setText('metricMarks', data.marks.length); 
-  setText('metricMarkSub', data.marks.length===0?'No marks uploaded':data.marks.length+' entries across subjects'); 
-  setText('metricAttRate', attPct!==null ? attPct+'%' : '—%'); 
-  setText('metricAttSub', attPct!==null ? `${allAtt} of ${data.attendance.length} sessions` : 'No records yet'); 
-  setText('metricTopper', topper ? topper.s.name.split(' ')[0] : 'No data'); 
-  setText('metricTopperSub', topper ? `Avg: ${topper.a} (${topper.s.studentNumber})` : 'No marks recorded'); 
-  setText('attPresCount', data.attendance.filter(a=>a.status==='PRESENT').length); 
-  setText('attAbsCount', data.attendance.filter(a=>a.status==='ABSENT').length); 
-  setText('attLateCount', data.attendance.filter(a=>a.status==='LATE').length); 
-}
+    document.getElementById('studentSearch')?.addEventListener('input', e => { renderStudentTable(load(), e.target.value.toLowerCase().trim()); });
+    document.getElementById('markSearch')?.addEventListener('input', e => { renderMarkTable(load(), e.target.value.toLowerCase().trim()); });
 
-function setText(id, val) { const el=document.getElementById(id); if(el) el.textContent=val; }
+    document.getElementById('resetDemo').addEventListener('click', () => { localStorage.removeItem(KEY); render(); showToast('Demo data reset successfully', 'teal'); });
 
-function renderStudentTable(data, filter='') { 
-  const tbody = document.getElementById('studentRows'); 
-  if (!tbody) return; 
-  let students = data.students; 
-  if (filter) students = students.filter(s=> s.name.toLowerCase().includes(filter) || s.studentNumber.toLowerCase().includes(filter) || s.course.toLowerCase().includes(filter) ); 
-  tbody.innerHTML = students.length ? students.map(s=>{ 
-    const a = studentAvg(data,s.id); 
-    const ar = attRate(data,s.id); 
-    const g = gradeFor(a); 
-    return `<tr><td class="td-name">${s.name}</td><td>${s.studentNumber}</td><td>${s.course}</td><td>${s.yearLevel}</td><td class="td-score">${a>0?`<span class="score-pill">${a}</span>`:'—'}</td><td>${ar>0?`<span class="score-pill">${ar}%</span>`:'—'}</td><td style="color:var(--text3);font-size:0.8rem">${s.email}</td><td><button class="btn-danger" data-del-student="${s.id}">Remove</button></td></tr>`; 
-  }).join('') : '<tr><td colspan="8" class="empty-state">No students found.</td></tr>'; 
-}
+    const dateInput = document.querySelector('input[type="date"]');
+    if (dateInput) dateInput.value = new Date().toISOString().slice(0, 10);
 
-function renderMarkTable(data, filter='') { 
-  const tbody = document.getElementById('markRows'); 
-  if (!tbody) return; 
-  let marks = [...data.marks].reverse(); 
-  if (filter) marks = marks.filter(m=> studentName(data,m.studentId).toLowerCase().includes(filter)|| m.subject.toLowerCase().includes(filter)|| m.examType.toLowerCase().includes(filter) ); 
-  tbody.innerHTML = marks.length ? marks.map(m=>{ 
-    const g = gradeFor(m.score); 
-    return `<tr><td class="td-name">${studentName(data,m.studentId)}</td><td>${m.subject}</td><td>${m.examType}</td><td class="td-score">${m.score}</td><td><span class="score-pill">${g}</span></td><td><button class="btn-danger" data-del-mark="${m.id}">Remove</button></td></tr>`; 
-  }).join('') : '<tr><td colspan="6" class="empty-state">No marks uploaded yet.</td></tr>'; 
-}
-
-function renderAttTable(data) { 
-  const tbody = document.getElementById('attendanceRows'); 
-  if (!tbody) return; 
-  const rows = [...data.attendance].reverse(); 
-  tbody.innerHTML = rows.length ? rows.map(r=>{ 
-    const cls = {PRESENT:'att-present',ABSENT:'att-absent',LATE:'att-late'}[r.status]||'att-late'; 
-    return `<tr><td class="td-name">${studentName(data,r.studentId)}</td><td>${r.subject}</td><td>${r.date}</td><td><span class="${cls}">${r.status}</span></td><td><button class="btn-danger" data-del-att="${r.id}">Remove</button></td></tr>`; 
-  }).join('') : '<tr><td colspan="5" class="empty-state">No attendance recorded yet.</td></tr>'; 
-}
-
-function renderStudentBreakdown(data) { 
-  const gEl = document.getElementById('genderBreakdown'); 
-  if (!gEl) return; 
-  const genders = {}; 
-  data.students.forEach(s=>{ if (s.gender) genders[s.gender]=(genders[s.gender]||0)+1; }); 
-  const total = data.students.length||1; 
-  gEl.innerHTML = Object.entries(genders).map(([g,c])=>` <div class="topper-row"><span class="topper-subject">${g}</span><span class="topper-name">${c} <span style="color:var(--text3)">/ ${Math.round(c*100/total)}%</span></span></div>`).join('')||'<div class="empty-state">No students yet</div>'; 
-}
-
-function renderToppers(data) { 
-  const el = document.getElementById('subjectToppers'); 
-  if (!el) return; 
-  el.innerHTML = SUBJECTS.map(sub=>{ 
-    const best = data.marks.filter(m=>m.subject===sub).sort((a,b)=>b.score-a.score)[0]; 
-    return `<div class="topper-row"><span class="topper-subject">${sub}</span><span class="topper-name">${best?studentName(data,best.studentId).split(' ')[0]:'—'}<span class="topper-score">${best?best.score:'—'}</span></span></div>`; 
-  }).join(''); 
-}
-
-function renderGradeDistribution(data) { 
-  const el = document.getElementById('gradeDistribution'); 
-  if (!el) return; 
-  const grades = {'A+':0,'A':0,'B':0,'C':0,'D':0,'NS':0}; 
-  data.marks.forEach(m=>{ const g=gradeFor(m.score); grades[g]=(grades[g]||0)+1; }); 
-  const total = data.marks.length||1; 
-  const colors = {'A+':'var(--green)','A':'var(--accent2)','B':'var(--violet)','C':'var(--amber)','D':'var(--rose)','NS':'#ff4060'}; 
-  el.innerHTML = Object.entries(grades).map(([g,c])=>` <div style="background:rgba(10,15,30,0.6);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center"><div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:${colors[g]}">${c}</div><div style="font-size:0.72rem;color:var(--text3);font-weight:700;margin-top:4px">${g}</div><div style="font-size:0.68rem;color:var(--text3);margin-top:2px">${Math.round(c*100/total)}%</div></div>`).join(''); 
-}
-
-function renderRankings(data) { 
-  const tbody = document.getElementById('rankingRows'); 
-  if (!tbody) return; 
-  const ranked = data.students.map(s=>({s,a:studentAvg(data,s.id),ar:attRate(data,s.id)})).sort((a,b)=>b.a-a.a); 
-  const medals = ['🥇','🥈','🥉']; 
-  tbody.innerHTML = ranked.map((r,i)=>{ 
-    const g = gradeFor(r.a); 
-    const pct = r.a; 
-    return `<tr><td style="font-size:1.1rem">${medals[i]||`#${i+1}`}</td><td class="td-name">${r.s.name}</td><td class="td-score">${r.a>0?r.a:'—'}</td><td>${r.a>0?`<span class="score-pill">${g}</span>`:'—'}</td><td>${r.ar>0?`${r.ar}%`:'—'}</td><td style="min-width:120px"><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;background:linear-gradient(90deg,var(--accent),var(--teal))"></div></div></td></tr>`; 
-  }).join('')||'<tr><td colspan="6" class="empty-state">No data</td></tr>'; 
-}
-
-Chart.defaults.color = '#96a8c8'; 
-Chart.defaults.borderColor = 'rgba(91,140,255,0.1)'; 
-Chart.defaults.font.family = 'DM Sans';
-
-function mkChart(id, type, labels, values, colors, yMax) { 
-  const canvas = document.getElementById(id); 
-  if (!canvas) return; 
-  if (charts[id]) charts[id].destroy(); 
-  const isMulti = Array.isArray(colors); 
-  charts[id] = new Chart(canvas, { 
-    type, 
-    data: { 
-      labels, 
-      datasets:[{ 
-        data: values, 
-        backgroundColor: isMulti ? colors : (type==='line'?'rgba(91,140,255,0.1)':colors), 
-        borderColor: isMulti ? colors.map(c=>c) : (type==='line'?'#5b8cff':colors), 
-        borderWidth: type==='line'?2.5:0, 
-        borderRadius: type==='bar'?8:0, 
-        tension: 0.4, 
-        fill: type==='line', 
-        pointBackgroundColor: '#5b8cff', 
-        pointRadius: 4, 
-      }] 
-    }, 
-    options: { responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true, max:yMax||undefined, grid:{ color:'rgba(91,140,255,0.06)' }, ticks:{color:'#5a6e8e'} }, x:{ grid:{ display:false }, ticks:{color:'#5a6e8e'} } }, plugins:{ legend:{ display:false } } } 
-  }); 
-}
-
-function renderCharts(data) { 
-  const subAvgs = subjectAvgs(data); 
-  mkChart('subjectChart','bar', Object.keys(subAvgs), Object.values(subAvgs), ['rgba(91,140,255,0.8)','rgba(0,212,170,0.8)','rgba(245,166,35,0.8)','rgba(167,139,250,0.8)','rgba(255,94,126,0.8)'], 100); 
-  const stAvgs = data.students.map(s=>({n:s.name.split(' ')[0], a:studentAvg(data,s.id)})).sort((a,b)=>b.a-a.a); 
-  mkChart('studentChart','line', stAvgs.map(x=>x.n), stAvgs.map(x=>x.a), '#5b8cff', 100); 
-  const attR = data.students.map(s=>({n:s.name.split(' ')[0],r:attRate(data,s.id)})); 
-  mkChart('attRateChart','bar', attR.map(x=>x.n), attR.map(x=>x.r), attR.map(x=>x.r>=80?'rgba(0,212,170,0.8)':x.r>=60?'rgba(245,166,35,0.8)':'rgba(255,94,126,0.8)'), 100); 
-  mkChart('marksSubjectChart','bar', Object.keys(subAvgs), Object.values(subAvgs), 'rgba(91,140,255,0.75)', 100); 
-  const labels = data.students.map(s=>s.name.split(' ')[0]); 
-  const values = data.students.map(s=>studentAvg(data,s.id)); 
-  mkChart('overviewChart','line', labels, values, '#5b8cff', 100); 
-  const pCount = data.attendance.filter(a=>a.status==='PRESENT').length; 
-  const aCount = data.attendance.filter(a=>a.status==='ABSENT').length; 
-  const lCount = data.attendance.filter(a=>a.status==='LATE').length; 
-  const attCanvas = document.getElementById('attendanceChart'); 
-  if (attCanvas) { 
-    if (charts['attendanceChart']) charts['attendanceChart'].destroy(); 
-    charts['attendanceChart'] = new Chart(attCanvas, { type:'doughnut', data:{ labels:['Present','Absent','Late'], datasets:[{ data:[pCount,aCount,lCount], backgroundColor:['rgba(0,212,170,0.85)','rgba(255,94,126,0.85)','rgba(245,166,35,0.85)'], borderWidth:0,borderRadius:4 }] }, options:{ responsive:true,maintainAspectRatio:false, plugins:{legend:{position:'bottom',labels:{color:'#96a8c8',padding:12,font:{size:12}}}} } }); 
-  } 
-}
-
-function renderReports(data) { 
-  const el = document.getElementById('reportCards'); 
-  if (!el) return; 
-  el.innerHTML = data.students.length ? data.students.map(s=>{ 
-    const marks = data.marks.filter(m=>m.studentId===s.id); 
-    const a = studentAvg(data,s.id); 
-    const ar = attRate(data,s.id); 
-    const g = gradeFor(a); 
-    const gc = gradeReportClass(g); 
-    const mRows = marks.length ? marks.map(m=>` <tr><td>${m.subject}</td><td>${m.examType}</td><td>${m.score}</td></tr>`).join('') :'<tr><td colspan="3" style="color:var(--text3);text-align:center">No marks</td></tr>'; 
-    return `<div class="report-card"><div class="report-head"><div><div class="report-student-id">${s.studentNumber} · ${s.course}</div><div class="report-student-name">${s.name}</div><div style="font-size:0.75rem;color:var(--text3);margin-top:4px">${s.yearLevel} · ${s.gender||'—'}</div></div><div class="report-grade-badge ${gc}">${g}</div></div><div class="report-stats"><div class="report-stat"><div class="report-stat-label">Avg Score</div><div class="report-stat-value">${a>0?a:'—'}</div></div><div class="report-stat"><div class="report-stat-label">Attendance</div><div class="report-stat-value">${ar>0?ar+'%':'—'}</div></div></div><table class="report-table"><thead><tr><th>Subject</th><th>Type</th><th>Score</th></tr></thead><tbody>${mRows}</tbody></table><button class="btn-download" data-dl-report="${s.id}"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Download PDF</button></div>`; 
-  }).join('') : '<p class="empty-state">Add students to generate report cards.</p>'; 
-}
-
-function downloadReport(data, sid) { 
-  const s = data.students.find(st=>st.id===sid); 
-  if (!s) return; 
-  const marks = data.marks.filter(m=>m.studentId===sid); 
-  const a = studentAvg(data,sid); 
-  const ar = attRate(data,sid); 
-  const {jsPDF} = window.jspdf; 
-  const doc = new jsPDF(); 
-  doc.setFillColor(10,15,30); 
-  doc.rect(0,0,210,45,'F'); 
-  doc.setFontSize(22); 
-  doc.setTextColor(91,140,255); 
-  doc.setFont('helvetica','bold'); 
-  doc.text('EduTrack', 14, 20); 
-  doc.setFontSize(11); 
-  doc.setTextColor(150,168,200); 
-  doc.setFont('helvetica','normal'); 
-  doc.text('Student Report Card', 14, 30); 
-  doc.setTextColor(255,255,255); 
-  doc.setFontSize(10); 
-  doc.text(`Generated: ${new Date().toLocaleDateString()}`, 130, 30, {align:'right'}); 
-  doc.setTextColor(30,40,60); 
-  doc.setFillColor(245,247,251); 
-  doc.rect(0,45,210,40,'F'); 
-  doc.setFontSize(16); 
-  doc.setFont('helvetica','bold'); 
-  doc.setTextColor(10,15,30); 
-  doc.text(s.name, 14, 62); 
-  doc.setFontSize(10); 
-  doc.setFont('helvetica','normal'); 
-  doc.setTextColor(90,110,140); 
-  doc.text(`${s.studentNumber} | ${s.course} | ${s.yearLevel}`, 14, 71); 
-  doc.text(`Email: ${s.email}`, 14, 79); 
-  doc.setFontSize(14); 
-  doc.setFont('helvetica','bold'); 
-  doc.setTextColor(91,140,255); 
-  doc.text(`Grade: ${gradeFor(a)}`, 170, 62, {align:'right'}); 
-  doc.setFontSize(10); 
-  doc.setFont('helvetica','normal'); 
-  doc.setTextColor(30,40,60); 
-  doc.text(`Average: ${a}`, 170, 71, {align:'right'}); 
-  doc.text(`Attendance: ${ar}%`, 170, 79, {align:'right'}); 
-  doc.autoTable({ head:[['Subject','Exam Type','Score','Grade']], body: marks.length ? marks.map(m=>[m.subject,m.examType,String(m.score),gradeFor(m.score)]) :[['No marks available','','','']], startY: 95, headStyles:{fillColor:[91,140,255],textColor:[255,255,255],fontStyle:'bold'}, alternateRowStyles:{fillColor:[245,247,251]}, styles:{fontSize:10,cellPadding:6}, }); 
-  doc.save(`${s.studentNumber}-${s.name.replace(/\s+/g,'-')}-report.pdf`); 
-  showToast(`Downloaded report for ${s.name}`, 'teal'); 
-}
-
-function downloadAllReports() { 
-  const data = load(); 
-  if (!data.students.length) { showToast('No students to download','rose'); return; } 
-  data.students.forEach((s,i)=>setTimeout(()=>downloadReport(data,s.id), i*400)); 
-}
-
-let toastTimer; 
-function showToast(msg, type='accent') { 
-  const t = document.getElementById('toast'); 
-  const d = document.getElementById('toastDot'); 
-  const m = document.getElementById('toastMsg'); 
-  const colors = {teal:'var(--teal)',accent:'var(--accent2)',rose:'var(--rose)',amber:'var(--amber)'}; 
-  d.style.background = colors[type]||colors.accent; 
-  m.textContent = msg; 
-  t.classList.add('show'); 
-  clearTimeout(toastTimer); 
-  toastTimer = setTimeout(()=>t.classList.remove('show'), 3000); 
-}
-
-const sections = ['overview','students','marks','attendance','analytics','reports']; 
-function navigate(name) { 
-  sections.forEach(s=>{ const el = document.getElementById('section-'+s); if (el) el.style.display = s===name?'' : 'none'; }); 
-  document.querySelectorAll('.nav-link').forEach(l=>{ l.classList.toggle('active', l.dataset.section===name); }); 
-  if (name==='analytics') { renderCharts(load()); renderToppers(load()); renderGradeDistribution(load()); renderRankings(load()); } 
-  if (name==='attendance') { renderAttTable(load()); } 
-  if (name==='marks') { renderMarkTable(load()); renderCharts(load()); } 
-  if (name==='students') { renderStudentTable(load()); renderStudentBreakdown(load()); } 
-  if (name==='reports') renderReports(load()); 
-  window.scrollTo({top:0,behavior:'smooth'}); 
-}
-
-function updateClock() { const el = document.getElementById('currentTime'); if (el) el.textContent = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); } 
-setInterval(updateClock, 1000); 
-updateClock();
-
-function render() { 
-  const data = load(); 
-  renderSelects(data); 
-  renderMetrics(data); 
-  renderStudentTable(data); 
-  renderMarkTable(data); 
-  renderStudentBreakdown(data); 
-  renderCharts(data); 
-}
-
-document.getElementById('studentForm').addEventListener('submit', e=>{ 
-  e.preventDefault(); 
-  const data = load(); 
-  const f = new FormData(e.currentTarget); 
-  data.students.push({ id:mkId(), name:f.get('name').trim(), studentNumber:f.get('studentNumber').trim(), email:f.get('email').trim(), course:f.get('course').trim(), yearLevel:f.get('yearLevel').trim(), gender:f.get('gender') }); 
-  save(data); 
-  e.currentTarget.reset(); 
-  render(); 
-  showToast(`${f.get('name').trim()} added successfully`, 'teal'); 
-});
-
-document.getElementById('markForm').addEventListener('submit', e=>{ 
-  e.preventDefault(); 
-  const data = load(); 
-  const f = new FormData(e.currentTarget); 
-  const sid = f.get('studentId'); 
-  if (!sid) return; 
-  data.marks.push({id:mkId(),studentId:sid,subject:f.get('subject'),examType:f.get('examType').trim(),score:Number(f.get('score'))}); 
-  save(data); 
-  e.currentTarget.reset(); 
-  renderSelects(data); 
-  render(); 
-  showToast('Marks uploaded successfully', 'accent'); 
-});
-
-document.getElementById('attendanceForm').addEventListener('submit', e=>{ 
-  e.preventDefault(); 
-  const data = load(); 
-  const f = new FormData(e.currentTarget); 
-  const sid = f.get('studentId'); 
-  if (!sid) return; 
-  data.attendance.push({id:mkId(),studentId:sid,subject:f.get('subject'),date:f.get('date'),status:f.get('status')}); 
-  save(data); 
-  e.currentTarget.reset(); 
-  renderSelects(data); 
-  render(); 
-  showToast('Attendance recorded', 'amber'); 
-});
-
-document.body.addEventListener('click', e=>{ 
-  const data = load(); 
-  if (e.target.dataset.delStudent) { 
-    const s = data.students.find(x=>x.id===e.target.dataset.delStudent); 
-    data.students = data.students.filter(x=>x.id!==e.target.dataset.delStudent); 
-    data.marks = data.marks.filter(m=>m.studentId!==e.target.dataset.delStudent); 
-    data.attendance = data.attendance.filter(a=>a.studentId!==e.target.dataset.delStudent); 
-    save(data); 
-    render(); 
-    renderStudentTable(data); 
-    showToast(`Removed ${s?.name||'student'}`, 'rose'); 
-  } 
-  if (e.target.dataset.delMark) { 
-    data.marks = data.marks.filter(m=>m.id!==e.target.dataset.delMark); 
-    save(data); 
-    render(); 
-    renderMarkTable(data); 
-    showToast('Mark entry removed', 'rose'); 
-  } 
-  if (e.target.dataset.delAtt) { 
-    data.attendance = data.attendance.filter(a=>a.id!==e.target.dataset.delAtt); 
-    save(data); 
-    render(); 
-    renderAttTable(data); 
-    showToast('Attendance record removed', 'rose'); 
-  } 
-  if (e.target.dataset.dlReport) { 
-    downloadReport(data, e.target.dataset.dlReport); 
-  } 
-  if (e.target.closest('[data-section]')) { 
-    navigate(e.target.closest('[data-section]').dataset.section); 
-  } 
-});
-
-document.getElementById('studentSearch')?.addEventListener('input', e=>{ renderStudentTable(load(), e.target.value.toLowerCase().trim()); }); 
-document.getElementById('markSearch')?.addEventListener('input', e=>{ renderMarkTable(load(), e.target.value.toLowerCase().trim()); });
-
-document.getElementById('resetDemo').addEventListener('click', ()=>{ localStorage.removeItem(KEY); render(); showToast('Demo data reset successfully', 'teal'); });
-
-const dateInput = document.querySelector('input[type="date"]'); 
-if (dateInput) dateInput.value = new Date().toISOString().slice(0,10);
-
-render(); 
-navigate('overview');
-</script>
+    render();
+    navigate('overview');
+  </script>
 </body>
+
 </html>
